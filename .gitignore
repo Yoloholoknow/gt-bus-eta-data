@@ -1,4 +1,5 @@
 data/*.jsonl
+reference/*.json
 __pycache__/
 *.pyc
 .venv/

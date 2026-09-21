@@ -10,13 +10,23 @@ Deliberately minimal — this is a starting point for the team to design the ana
 pip install -r requirements.txt
 ```
 
-## Poll
+## Reference data (run once)
+
+```
+python3 fetch_reference.py
+```
+
+Pulls the static stuff that barely changes — routes, stops, markers, route schedules, map config — into `reference/`. Run once at the start, or again if the route list changes.
+
+## Poll (run continuously)
 
 ```
 python3 poller.py
 ```
 
-Polls vehicle positions + stop estimates every 5s, appends to `data/YYYY-MM-DD.jsonl`. Ctrl+C to stop.
+Every 5s, hits every live-changing endpoint: vehicle positions, stop estimates, vehicle-keyed estimates, vehicle capacities, stop arrival times, Twitter feed. Appends one JSON line per poll to `data/YYYY-MM-DD.jsonl`. Ctrl+C to stop.
+
+`fetch_admin_data.py` covers `GetBadgeScanData`/`GetRidershipData` separately — those need a date range and are untested for access on this deployment, so they're not wired into the loop.
 
 ## Analyze
 
@@ -24,6 +34,6 @@ Polls vehicle positions + stop estimates every 5s, appends to `data/YYYY-MM-DD.j
 python3 analyze.py
 ```
 
-Loads whatever's in `data/` into a dataframe and prints a shape check. Everything past that is open — see the questions at the bottom of `analyze.py`.
+Loads everything in `data/`, prints basic per-endpoint counts (vehicles, capacities, estimates). Everything past that is intentionally unimplemented — see the comment block in `analyze.py` for the open questions (how to derive actual arrival time, what to group error by, how the known long-dwell stops should factor in).
 
 Related issues: gtiosclub/Georgia-Tech-App#237-#241.
