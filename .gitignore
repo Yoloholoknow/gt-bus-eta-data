@@ -1,4 +1,5 @@
 data/*.jsonl
+data/*.csv
 reference/*.json
 __pycache__/
 *.pyc
