@@ -1,9 +1,10 @@
 """
-GetBadgeScanData / GetRidershipData need a date range and appear to be
-admin-scoped (untested against GT's deployment — may 401 or return
-empty). Not part of the regular poller since they're a batch pull over
-a date range, not a live-state snapshot. Run manually if access is
-confirmed.
+Tested live against bus.gatech.edu: GetBadgeScanData returns 200 with an
+empty list (no badge-scan data configured on this deployment).
+GetRidershipData times out entirely - doesn't respond, effectively
+broken here. Neither is needed for ETA work anyway (fare/ridership
+counts, not location or timing) - GetVehicleCapacities already covers
+crowding. Left here for reference only, not part of the pipeline.
 """
 from datetime import datetime, timedelta, timezone
 
