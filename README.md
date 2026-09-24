@@ -24,7 +24,7 @@ python3 poller.py
 ```
 Every 5s, hits every live-changing endpoint: vehicle positions, stop estimates (both the per-route and per-vehicle shapes), vehicle capacities, stop arrival times, Twitter feed. Appends one JSON line per poll to `data/YYYY-MM-DD.jsonl`. Ctrl+C to stop.
 
-`fetch_admin_data.py` covers `GetBadgeScanData`/`GetRidershipData` separately — those need a date range and access is unconfirmed on this deployment, so they're not wired into the loop.
+`fetch_admin_data.py` covers `GetBadgeScanData`/`GetRidershipData` separately. Tested live: `GetBadgeScanData` returns `200 []` (works, but no data configured on this deployment), `GetRidershipData` times out entirely (broken, doesn't respond). Neither is needed anyway — they're fare-tap/ridership counts, not location/timing data, and `GetVehicleCapacities` (in the main loop) already gives a live crowding signal. Kept in the repo for reference only, not part of the pipeline.
 
 **3. Flatten (after collecting)**
 ```
