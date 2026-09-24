@@ -1,12 +1,17 @@
 import csv
+import json
+import math
 from collections import defaultdict
 from datetime import datetime
 
-# A vehicle "counts" as stopped below this speed. Known limitation: a bus
-# stuck in traffic while still approaching its target stop can register as
-# stopped here too, inflating dwell time for that visit. If that turns out
-# to matter, the fix is cross-checking GPS distance to the stop's actual
-# lat/lon (in reference/per_route.json) instead of relying on speed alone.
+# Verified live (two separate captures, ~10 min combined): the API's own
+# IsArriving flag fires 20-45+ seconds before a vehicle physically arrives,
+# including while stopped at a red light/traffic 70-200m from the actual
+# stop with IsArriving already True - not a reliable "physically here"
+# signal. IsDeparted fired zero times across both captures - dead on this
+# deployment. Arrival/departure here use GPS distance to the stop's real
+# coordinates instead, cross-checked with speed.
+RADIUS_METERS = 25
 SPEED_THRESHOLD = 1.0
 
 
@@ -15,12 +20,42 @@ def load_csv(path):
         return list(csv.DictReader(f))
 
 
+def load_stop_coords():
+    with open("reference/per_route.json") as f:
+        per_route = json.load(f)
+    coords = {}
+    for route_data in per_route.values():
+        for stop in route_data["stops"]:
+            # RouteStopID is an int here (from JSON) but a str once round-tripped
+            # through vehicle_estimates.csv - key by str to match on lookup.
+            coords[str(stop["RouteStopID"])] = (stop["Latitude"], stop["Longitude"])
+    return coords
+
+
+def haversine_m(lat1, lon1, lat2, lon2):
+    R = 6371000
+    p1, p2 = math.radians(lat1), math.radians(lat2)
+    dp = math.radians(lat2 - lat1)
+    dl = math.radians(lon2 - lon1)
+    a = math.sin(dp / 2) ** 2 + math.cos(p1) * math.cos(p2) * math.sin(dl / 2) ** 2
+    return 2 * R * math.asin(math.sqrt(a))
+
+
 def parse(ts):
     return datetime.fromisoformat(ts)
 
 
-def detect_visits(positions, vehicle_estimates):
-    speed = {(p["VehicleID"], p["fetched_at"]): float(p["GroundSpeed"] or 0) for p in positions}
+def at_stop(position, target_stop_id, stop_coords):
+    coords = stop_coords.get(target_stop_id)
+    if coords is None or position.get("Latitude") is None:
+        return False
+    dist = haversine_m(float(position["Latitude"]), float(position["Longitude"]), coords[0], coords[1])
+    speed = float(position.get("GroundSpeed") or 0)
+    return dist < RADIUS_METERS and speed < SPEED_THRESHOLD
+
+
+def detect_visits(positions, vehicle_estimates, stop_coords):
+    pos_by_poll = {(p["VehicleID"], p["fetched_at"]): p for p in positions}
     route_by_poll = {(p["VehicleID"], p["fetched_at"]): p["RouteID"] for p in positions}
 
     by_vehicle = defaultdict(list)
@@ -37,9 +72,12 @@ def detect_visits(positions, vehicle_estimates):
         def close_segment():
             if not segment:
                 return
-            stopped = [r for r in segment if speed.get((vehicle_id, r["fetched_at"]), 0) < SPEED_THRESHOLD]
+            stopped = [
+                r for r in segment
+                if at_stop(pos_by_poll.get((vehicle_id, r["fetched_at"]), {}), segment_stop, stop_coords)
+            ]
             if not stopped:
-                return  # target changed without ever registering as stopped - drove through without a hold
+                return  # target changed without ever registering as physically at the stop
             visits.append({
                 "VehicleID": vehicle_id,
                 "RouteID": route_by_poll.get((vehicle_id, segment[0]["fetched_at"])),
@@ -78,8 +116,9 @@ def add_dwell_and_travel(visits):
 if __name__ == "__main__":
     positions = load_csv("data/positions.csv")
     vehicle_estimates = load_csv("data/vehicle_estimates.csv")
+    stop_coords = load_stop_coords()
 
-    visits = detect_visits(positions, vehicle_estimates)
+    visits = detect_visits(positions, vehicle_estimates, stop_coords)
     visits = add_dwell_and_travel(visits)
     visits.sort(key=lambda v: (v["VehicleID"], v["arrival_ts"]))
 
