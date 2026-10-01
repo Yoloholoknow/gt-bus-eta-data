@@ -8,13 +8,12 @@ import math
 import re
 import sys
 import time
-import uuid
 from concurrent.futures import Future, ThreadPoolExecutor
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 from queue import Empty, Queue
-from typing import Any, Callable, TextIO
+from typing import Any, Callable
 from zoneinfo import ZoneInfo
 
 import requests
@@ -168,32 +167,6 @@ class PollResult:
     response_text: str | None = None
 
 
-class Diagnostics:
-    def __init__(self, output: TextIO, run_id: str):
-        self.output = output
-        self.run_id = run_id
-
-    def write(self, kind: str, **details: Any) -> None:
-        self.output.write(json.dumps(
-            {"kind": kind, "run_id": self.run_id,
-             "logged_at": format_timestamp(Observation.now()), **details},
-            ensure_ascii=False,
-        ) + "\n")
-        self.output.flush()
-
-    def response(self, result: PollResult) -> None:
-        self.write(
-            "request", stream=result.stream.name, url=result.stream.url,
-            params=result.stream.params, stop_ids=result.stream.stop_ids,
-            request_started_at=format_timestamp(result.started),
-            response_received_at=format_timestamp(result.received),
-            request_seconds=result.duration, poll_gap_seconds=result.start_gap,
-            processing_delay_seconds=time.monotonic() - result.received.monotonic,
-            status_code=result.status_code, headers=result.headers,
-            error=result.error, data=result.data, response_text=result.response_text,
-        )
-
-
 def perform_request(stream: PollStream, timeout_seconds: float) -> PollResult:
     # The scheduler allows only one outstanding request per stream. Each stream
     # owns a Session; no Session is used by concurrent requests.
@@ -252,12 +225,11 @@ def ensure_csv_header(path: str) -> None:
 
 
 def prepare_stops(
-    stops: dict[str, StopConfig], timeout: float, diagnostics: Diagnostics,
+    stops: dict[str, StopConfig], timeout: float,
 ) -> tuple[dict[str, StopConfig], dict[int, str]]:
     def fetch(session: requests.Session, name: str, url: str, params: dict[str, str]) -> list:
         stream = PollStream(name, "metadata", url, params, session=session)
         result = perform_request(stream, timeout)
-        diagnostics.response(result)
         if result.error or not isinstance(result.data, list):
             raise ValueError(f"{name}: {result.error or 'Expected a JSON list'}")
         return result.data
@@ -316,7 +288,7 @@ class VisitTracker:
 
     def __init__(
         self, stops: dict[str, StopConfig], route_names: dict[int, str], radius: float,
-        interval: float, output: TextIO, diagnostics: Diagnostics,
+        interval: float, output: Any,
         emit: Callable[..., None] = print,
     ):
         self.stops = stops
@@ -325,7 +297,6 @@ class VisitTracker:
         self.max_gap = MAX_OBSERVATION_GAP_INTERVALS * interval
         self.output = output
         self.writer = csv.DictWriter(output, fieldnames=CSV_COLUMNS)
-        self.diagnostics = diagnostics
         self.emit = emit
         self.pairs: dict[VisitKey, PairState] = {}
         self.fixes: dict[str, GPSFix] = {}
@@ -350,7 +321,6 @@ class VisitTracker:
             return
         visit.flags.add(reason)
         self.log("excluded", pair, reason=reason, visit_id=visit.visit_id)
-        self.diagnostics.write("quality", visit_id=visit.visit_id, reason=reason)
 
     def invalidate_signal(self, stop_ids: tuple[str, ...], reason: str) -> None:
         for pair in self.pairs.values():
@@ -376,7 +346,6 @@ class VisitTracker:
                 self.invalidate_gps(vid, reason)
 
     def handle(self, result: PollResult) -> None:
-        self.diagnostics.response(result)
         stream, observed = result.stream, result.received
         self.streams[stream.name] = stream
         previous = self.successes.get(stream.name)
@@ -504,7 +473,7 @@ class VisitTracker:
     def start_visit(self, pair: PairState, result: PollResult) -> None:
         self.sequence += 1
         pair.visit = ActiveVisit(
-            f"{self.diagnostics.run_id}:{self.sequence}", pair.key, result.received,
+            str(self.sequence), pair.key, result.received,
             pair.last_false, result.duration, result.start_gap,
         )
         pair.latched = True
@@ -651,7 +620,7 @@ class VisitTracker:
         rid, sid, vid = pair.key
         quality = ";".join(sorted(visit.flags)) or "ok"
         # The CSV is the clean analysis dataset: only complete, validated
-        # measurements belong there. Keep rejected visits in JSONL diagnostics.
+        # measurements belong there.
         row = None
         if (not visit.flags and lead is not None and upper is not None and lower is not None
                 and visit.entry is not None and visit.departure is not None):
@@ -671,17 +640,6 @@ class VisitTracker:
             self.output.flush()
         pair.visit = None
         pair.armed = False
-        self.diagnostics.write(
-            "visit", visit_id=visit.visit_id, route_id=rid, route_stop_id=sid,
-            vehicle_id=vid, isarriving_time=format_timestamp(visit.signal),
-            at_stop_time=format_timestamp(visit.entry.observed if visit.entry else None),
-            is_departing_time=format_timestamp(visit.departure),
-            time_at_stop_seconds=number(elapsed(visit.departure, visit.entry.observed)
-                if visit.departure is not None and visit.entry is not None else None),
-            lead_seconds=number(lead), lead_uncertainty_seconds=number(
-                upper - lower if upper is not None and lower is not None else None
-            ), quality=quality, csv_written=row is not None, end=reason,
-        )
         self.log("lead", pair, lead="unknown" if lead is None else f"{lead:.3f}s",
                  quality=quality, csv_written=row is not None, end=reason)
         # Leave the latch set until fresh false + outside observations rearm it.
@@ -751,14 +709,10 @@ def run_polling(
         raise
     finally:
         executor.shutdown(wait=True)
-        # Retain the final in-flight responses as diagnostics without starting
-        # any more requests. Finish pending visits exactly once.
+        # Finish pending visits exactly once without starting more requests.
         while not completed.empty():
             stream, future = completed.get_nowait()
-            if end_reason == "collector_error":
-                if not future.cancelled() and future.exception() is None:
-                    tracker.diagnostics.response(future.result())
-            else:
+            if end_reason != "collector_error":
                 accept(stream, future)
         tracker.finish(end_reason)
         for stream in streams:
@@ -768,8 +722,7 @@ def run_polling(
 
 def run_tracker(
     config_path: str, output_path: str, poll_seconds: float, request_timeout_seconds: float,
-    chunk_size: int, geofence_radius_meters: float, diagnostics_path: str | None = None,
-    duration_seconds: float | None = None,
+    chunk_size: int, geofence_radius_meters: float, duration_seconds: float | None = None,
 ) -> None:
     for name, value in (("Poll interval", poll_seconds), ("Request timeout", request_timeout_seconds),
                         ("Geofence radius", geofence_radius_meters)):
@@ -779,35 +732,22 @@ def run_tracker(
         raise ValueError("Chunk size must be positive.")
     if duration_seconds is not None and (not math.isfinite(duration_seconds) or duration_seconds <= 0):
         raise ValueError("Duration must be positive and finite.")
-    diagnostics_path = diagnostics_path or str(Path(output_path).with_suffix(".jsonl"))
-    paths = [Path(p).resolve() for p in (config_path, output_path, diagnostics_path)]
-    if len(set(paths)) != len(paths):
-        raise ValueError("Config, CSV output, and diagnostics must use different paths.")
     Path(output_path).parent.mkdir(parents=True, exist_ok=True)
-    Path(diagnostics_path).parent.mkdir(parents=True, exist_ok=True)
     stops = load_stop_config(config_path)
     ensure_csv_header(output_path)
-    run_id = uuid.uuid4().hex[:12]
-    with open(diagnostics_path, "a", encoding="utf-8") as raw:
-        diagnostics = Diagnostics(raw, run_id)
-        stops, names = prepare_stops(stops, request_timeout_seconds, diagnostics)
-        ids = list(stops)
-        streams = [PollStream(
-            f"arrivals:{i // chunk_size}", "arrivals", ARRIVAL_TIMES_URL,
-            {"routeStopIDs": ",".join(ids[i:i + chunk_size])}, tuple(ids[i:i + chunk_size]),
-        ) for i in range(0, len(ids), chunk_size)]
-        streams.append(PollStream("gps", "gps", VEHICLE_POINTS_URL))
-        diagnostics.write("run_start", schema_version=2, poll_seconds=poll_seconds,
-                          radius_meters=geofence_radius_meters, route_filters=ROUTE_NAME_FILTERS,
-                          stops={sid: vars(stop) for sid, stop in stops.items()},
-                          time_basis="response_received")
-        with open(output_path, "a", newline="", encoding="utf-8") as output:
-            tracker = VisitTracker(stops, names, geofence_radius_meters, poll_seconds, output, diagnostics)
-            print(f"Tracking {len(stops)} route-stops; target interval={poll_seconds:g}s; "
-                  f"radius={geofence_radius_meters:g}m; routes={', '.join(ROUTE_NAME_FILTERS) or 'all'}; "
-                  f"CSV={output_path}; diagnostics={diagnostics_path}", flush=True)
-            run_polling(streams, tracker, poll_seconds, request_timeout_seconds, duration_seconds)
-        diagnostics.write("run_end")
+    stops, names = prepare_stops(stops, request_timeout_seconds)
+    ids = list(stops)
+    streams = [PollStream(
+        f"arrivals:{i // chunk_size}", "arrivals", ARRIVAL_TIMES_URL,
+        {"routeStopIDs": ",".join(ids[i:i + chunk_size])}, tuple(ids[i:i + chunk_size]),
+    ) for i in range(0, len(ids), chunk_size)]
+    streams.append(PollStream("gps", "gps", VEHICLE_POINTS_URL))
+    with open(output_path, "a", newline="", encoding="utf-8") as output:
+        tracker = VisitTracker(stops, names, geofence_radius_meters, poll_seconds, output)
+        print(f"Tracking {len(stops)} route-stops; target interval={poll_seconds:g}s; "
+              f"radius={geofence_radius_meters:g}m; routes={', '.join(ROUTE_NAME_FILTERS) or 'all'}; "
+              f"CSV={output_path}", flush=True)
+        run_polling(streams, tracker, poll_seconds, request_timeout_seconds, duration_seconds)
 
 
 def parse_args() -> argparse.Namespace:
@@ -815,7 +755,6 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--config", default="all_stops.json", help="Route-stop config JSON.")
     default_output = Path(__file__).resolve().parent / "data" / "stops_timings" / "combined_stop_visits.csv"
     parser.add_argument("--output", default=str(default_output), help="Append-only CSV of completed valid stop visits.")
-    parser.add_argument("--diagnostics", help="Raw JSONL path (defaults to the CSV path with .jsonl suffix).")
     parser.add_argument("--poll-seconds", type=float, default=DEFAULT_POLL_SECONDS,
                         help="Target request-start interval per stream, in seconds.")
     parser.add_argument("--request-timeout-seconds", type=float, default=10, help="HTTP request timeout.")
@@ -830,7 +769,7 @@ def main() -> int:
     args = parse_args()
     try:
         run_tracker(args.config, args.output, args.poll_seconds, args.request_timeout_seconds,
-                    args.chunk_size, args.geofence_radius_meters, args.diagnostics, args.duration_seconds)
+                    args.chunk_size, args.geofence_radius_meters, args.duration_seconds)
     except KeyboardInterrupt:
         return 0
     except Exception as exc:
