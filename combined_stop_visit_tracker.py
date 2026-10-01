@@ -783,6 +783,8 @@ def run_tracker(
     paths = [Path(p).resolve() for p in (config_path, output_path, diagnostics_path)]
     if len(set(paths)) != len(paths):
         raise ValueError("Config, CSV output, and diagnostics must use different paths.")
+    Path(output_path).parent.mkdir(parents=True, exist_ok=True)
+    Path(diagnostics_path).parent.mkdir(parents=True, exist_ok=True)
     stops = load_stop_config(config_path)
     ensure_csv_header(output_path)
     run_id = uuid.uuid4().hex[:12]
@@ -811,7 +813,8 @@ def run_tracker(
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Track arrival, 10-meter stop entry, and departure for configured route-stops.")
     parser.add_argument("--config", default="all_stops.json", help="Route-stop config JSON.")
-    parser.add_argument("--output", default="combined_stop_visits.csv", help="Append-only CSV of completed valid stop visits.")
+    default_output = Path(__file__).resolve().parent / "data" / "stops_timings" / "combined_stop_visits.csv"
+    parser.add_argument("--output", default=str(default_output), help="Append-only CSV of completed valid stop visits.")
     parser.add_argument("--diagnostics", help="Raw JSONL path (defaults to the CSV path with .jsonl suffix).")
     parser.add_argument("--poll-seconds", type=float, default=DEFAULT_POLL_SECONDS,
                         help="Target request-start interval per stream, in seconds.")
