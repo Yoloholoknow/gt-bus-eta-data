@@ -22,7 +22,7 @@ import requests
 
 # Leave empty to track every route. Names are case-insensitive.
 ROUTE_NAME_FILTERS: list[str] = []
-DEFAULT_GEOFENCE_METERS = 30.0
+DEFAULT_GEOFENCE_METERS = 1.0
 DEFAULT_POLL_SECONDS = 1.0
 MAX_POLL_WORKERS = 4
 MAX_OBSERVATION_GAP_INTERVALS = 3
@@ -40,7 +40,8 @@ VisitKey = tuple[int, str, str]  # RouteID, RouteStopID, VehicleID
 
 CSV_COLUMNS = [
     "route_color", "route_id", "route_stop_id", "stop_name", "vehicle_number",
-    "isarriving_time", "at_stop_time", "lead_seconds", "geofence_radius_meters",
+    "is_arriving_time", "at_stop_time", "is_departing_time",
+    "time_at_stop_seconds", "arriving_lead_seconds",
 ]
 
 
@@ -124,6 +125,7 @@ class ActiveVisit:
     arrival_poll_gap_seconds: float | None
     entry: GPSFix | None = None
     entry_start: GPSFix | None = None
+    departure: Observation | None = None
     flags: set[str] = field(default_factory=set)
 
 
@@ -459,6 +461,8 @@ class VisitTracker:
                 elif any(e.get("IsArriving") is False for e in entries):
                     flag = False
                 elif any(e.get("IsDeparted") is True for e in entries):
+                    if pair.visit is not None:
+                        pair.visit.departure = observed
                     self.finish_visit(pair, "departed")
                     pair.flag, pair.last_false, pair.armed = None, None, False
                     continue
@@ -475,6 +479,8 @@ class VisitTracker:
                         self.start_visit(pair, result)
                     pair.flag = True
                 else:
+                    if pair.visit is not None:
+                        pair.visit.departure = observed
                     self.finish_visit(pair, "signal_false")
                     pair.flag = False
                     pair.last_false = observed
@@ -535,10 +541,8 @@ class VisitTracker:
                  quality=";".join(sorted(visit.flags)) or "pending")
 
     def write_arrivals(self) -> None:
-        """Write each visit as soon as both its signal and stop entry are known."""
-        for pair in self.pairs.values():
-            if pair.visit is not None and pair.visit.entry is not None:
-                self.finish_visit(pair, "stop_entry")
+        """Keep visits open until departure is observed."""
+        return
 
     def gps(self, result: PollResult) -> None:
         observed = result.received
@@ -617,6 +621,8 @@ class VisitTracker:
             return
         if visit.entry is None:
             visit.flags.add("missing_entry")
+        if visit.departure is None:
+            visit.flags.add("missing_departure")
         if visit.signal_start is None:
             visit.flags.add("signal_unbracketed")
         signal_width = entry_width = None
@@ -635,7 +641,9 @@ class VisitTracker:
             lead = elapsed(visit.entry.observed, visit.signal)
             lower = elapsed(visit.entry_start.observed, visit.signal)
             upper = elapsed(visit.entry.observed, visit.signal_start)
-            if lead < 0 or lower < 0 or upper < lead:
+            if (lead < 0 or lower < 0 or upper < lead
+                    or visit.departure is None
+                    or elapsed(visit.departure, visit.entry.observed) < 0):
                 visit.flags.add("invalid_event_order")
                 lead = lower = upper = None
         def number(value: float | None) -> float | str:
@@ -645,17 +653,19 @@ class VisitTracker:
         # The CSV is the clean analysis dataset: only complete, validated
         # measurements belong there. Keep rejected visits in JSONL diagnostics.
         row = None
-        if not visit.flags and lead is not None and upper is not None and lower is not None:
+        if (not visit.flags and lead is not None and upper is not None and lower is not None
+                and visit.entry is not None and visit.departure is not None):
             row = {
                 "route_color": self.route_names.get(rid, str(rid)),
                 "route_id": rid,
                 "route_stop_id": sid,
                 "stop_name": self.stops[sid].name,
                 "vehicle_number": self.vehicle_numbers.get(vid, vid),
-                "isarriving_time": format_timestamp(visit.signal),
+                "is_arriving_time": format_timestamp(visit.signal),
                 "at_stop_time": format_timestamp(visit.entry.observed),
-                "lead_seconds": number(lead),
-                "geofence_radius_meters": self.radius,
+                "is_departing_time": format_timestamp(visit.departure),
+                "time_at_stop_seconds": number(elapsed(visit.departure, visit.entry.observed)),
+                "arriving_lead_seconds": number(lead),
             }
             self.writer.writerow(row)
             self.output.flush()
@@ -665,6 +675,9 @@ class VisitTracker:
             "visit", visit_id=visit.visit_id, route_id=rid, route_stop_id=sid,
             vehicle_id=vid, isarriving_time=format_timestamp(visit.signal),
             at_stop_time=format_timestamp(visit.entry.observed if visit.entry else None),
+            is_departing_time=format_timestamp(visit.departure),
+            time_at_stop_seconds=number(elapsed(visit.departure, visit.entry.observed)
+                if visit.departure is not None and visit.entry is not None else None),
             lead_seconds=number(lead), lead_uncertainty_seconds=number(
                 upper - lower if upper is not None and lower is not None else None
             ), quality=quality, csv_written=row is not None, end=reason,
@@ -688,7 +701,7 @@ class VisitTracker:
 
     def finish(self, reason: str) -> None:
         for pair in self.pairs.values():
-            if pair.visit and pair.visit.entry is None:
+            if pair.visit and (pair.visit.entry is None or pair.visit.departure is None):
                 pair.visit.flags.add("incomplete_visit")
             self.finish_visit(pair, reason)
 
@@ -796,15 +809,15 @@ def run_tracker(
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(description="Track arrival, 10-meter stop entry, and departure for configured route-stops.")
     parser.add_argument("--config", default="all_stops.json", help="Route-stop config JSON.")
-    parser.add_argument("--output", default="isarriving_lead_v4.csv", help="Append-only CSV of valid measurements.")
+    parser.add_argument("--output", default="combined_stop_visits.csv", help="Append-only CSV of completed valid stop visits.")
     parser.add_argument("--diagnostics", help="Raw JSONL path (defaults to the CSV path with .jsonl suffix).")
     parser.add_argument("--poll-seconds", type=float, default=DEFAULT_POLL_SECONDS,
                         help="Target request-start interval per stream, in seconds.")
     parser.add_argument("--request-timeout-seconds", type=float, default=10, help="HTTP request timeout.")
     parser.add_argument("--chunk-size", type=int, default=50, help="RouteStopIDs per arrivals request.")
-    parser.add_argument("--geofence-radius-meters", type=float, default=DEFAULT_GEOFENCE_METERS)
+    parser.add_argument("--geofence-radius-meters", type=float, default=10.0, help="GPS radius used to mark at_stop_time, in meters (default: 10).")
     parser.add_argument("--duration-seconds", type=float, help="Optional bounded collection duration after startup.")
     return parser.parse_args()
 
