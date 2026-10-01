@@ -26,6 +26,14 @@ Every 5s, hits every live-changing endpoint: vehicle positions, stop estimates (
 
 `fetch_admin_data.py` covers `GetBadgeScanData`/`GetRidershipData` separately. Tested live: `GetBadgeScanData` returns `200 []` (works, but no data configured on this deployment), `GetRidershipData` times out entirely (broken, doesn't respond). Neither is needed anyway — they're fare-tap/ridership counts, not location/timing data, and `GetVehicleCapacities` (in the main loop) already gives a live crowding signal. Kept in the repo for reference only, not part of the pipeline.
 
+**2b. Vehicle heading collector and dashboard (optional)**
+```
+python3 vehicle_heading_collector.py
+streamlit run dashboard.py
+```
+
+The heading collector writes one row per vehicle per poll to `data/vehicle_heading/vehicle_points_YYYY-MM-DD.csv` and records request health in a matching `collector_status_YYYY-MM-DD.csv`. The dashboard shows the latest bus map, active-bus counts, route speed summaries, heading distributions, source age, and polling gaps.
+
 **3. Flatten (after collecting)**
 ```
 python3 flatten.py
