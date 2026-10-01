@@ -37,17 +37,6 @@ POINT_COLUMNS = [
     "heading",
 ]
 
-STATUS_COLUMNS = [
-    "tick",
-    "request_started_at",
-    "request_finished_at",
-    "duration_ms",
-    "http_status",
-    "ok",
-    "vehicle_count",
-    "error",
-]
-
 
 def utc_now() -> datetime:
     return datetime.now(timezone.utc)
@@ -118,7 +107,6 @@ def collect_once(
     response: requests.Response | None = None
     vehicles: list[dict[str, Any]] = []
     error = ""
-    http_status: int | str = ""
     ok = False
 
     try:
@@ -126,7 +114,6 @@ def collect_once(
             f"{BASE_URL}/GetMapVehiclePoints",
             timeout=timeout_seconds,
         )
-        http_status = response.status_code
         response.raise_for_status()
         payload = response.json()
         if not isinstance(payload, list):
@@ -136,7 +123,6 @@ def collect_once(
     except (requests.RequestException, ValueError, TypeError) as exc:
         error = f"{type(exc).__name__}: {exc}"
 
-    finished = utc_now()
     duration_ms = round((time.monotonic() - started_monotonic) * 1000, 1)
 
     if ok:
@@ -161,23 +147,6 @@ def collect_once(
             POINT_COLUMNS,
             point_rows,
         )
-
-    append_csv(
-        daily_path(output_dir, "collector_status", finished),
-        STATUS_COLUMNS,
-        [
-            {
-                "tick": tick,
-                "request_started_at": timestamp(started),
-                "request_finished_at": timestamp(finished),
-                "duration_ms": duration_ms,
-                "http_status": http_status,
-                "ok": ok,
-                "vehicle_count": len(vehicles),
-                "error": error,
-            }
-        ],
-    )
 
     if ok:
         logging.info("tick=%s saved %s vehicles in %sms", tick, len(vehicles), duration_ms)
