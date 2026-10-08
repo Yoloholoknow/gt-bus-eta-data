@@ -57,3 +57,41 @@ Reports vehicle/capacity counts, overall average dwell and inter-stop travel tim
 Still open for the team: is this dwell/travel data good enough to build a corrected ETA on top of as-is, or does the arrival-detection heuristic need the GPS-distance refinement first? See the comment at the bottom of `analyze.py`.
 
 Related issues: gtiosclub/Georgia-Tech-App#237-#241.
+
+
+## Fly
+
+The collectors run on one Fly machine (app `gt-bus-eta-data`, config in `fly.toml`). Data lives on the `data` volume, mounted at `/app/data`. Requires [flyctl](https://fly.io/docs/flyctl/install/) and `fly auth login`.
+
+**Deploy / update**
+```
+fly deploy
+```
+
+**Check status and logs**
+```
+fly status -a gt-bus-eta-data
+fly logs -a gt-bus-eta-data
+```
+
+**Stop / start the machine** (the volume and its data are kept while stopped)
+```
+fly machine list -a gt-bus-eta-data          # get the machine ID
+fly machine stop <machine-id> -a gt-bus-eta-data
+fly machine start <machine-id> -a gt-bus-eta-data
+```
+The restart policy is `always`, so a stopped machine only stays down if you stop it explicitly; a crash or `fly deploy` brings it back up.
+
+**Pull the volume locally** (machine must be running)
+```
+fly ssh sftp get -R -a gt-bus-eta-data /app/data ./data-backup
+```
+Or as a single archive:
+```
+fly ssh console -a gt-bus-eta-data -C "tar czf - -C /app data" > data.tgz
+```
+
+**Look around on the machine**
+```
+fly ssh console -a gt-bus-eta-data
+```
