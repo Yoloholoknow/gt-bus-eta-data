@@ -6,4 +6,3 @@ reference/*.json
 __pycache__/
 *.pyc
 .venv/
-data-backup/
