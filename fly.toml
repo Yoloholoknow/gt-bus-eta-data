@@ -1,0 +1,17 @@
+app = "gt-bus-eta-data"
+primary_region = "iad"
+
+[env]
+  PYTHONUNBUFFERED = "1"
+
+# Both collectors share one machine because a volume attaches to a single machine.
+[mounts]
+  source = "data"
+  destination = "/app/data"
+
+[[restart]]
+  policy = "always"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "256mb"
