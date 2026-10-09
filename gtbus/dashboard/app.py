@@ -2,7 +2,7 @@
 
 Run from the repository root with:
 
-    streamlit run dashboard.py
+    streamlit run gtbus/dashboard/app.py
 """
 
 import json
@@ -16,7 +16,7 @@ import requests
 import streamlit as st
 
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parents[2]
 DATA_DIR = ROOT / "data" / "vehicle_heading"
 ROUTES_PATH = ROOT / "reference" / "routes.json"
 ROUTES_URL = "https://bus.gatech.edu/Services/JSONPRelay.svc/GetRoutesForMapWithScheduleWithEncodedLine"
@@ -363,7 +363,7 @@ def render_map(data: pd.DataFrame) -> None:
             margin={"r": 300, "t": 45, "l": 0, "b": 0},
         )
         if line_count == 0:
-            st.info("Route geometry is unavailable. Run fetch_reference.py or allow the dashboard to reach the GT route API.")
+            st.info("Route geometry is unavailable. Run `python -m gtbus.reference` or allow the dashboard to reach the GT route API.")
     else:
         figure = px.scatter(
             latest,
@@ -378,7 +378,7 @@ def render_map(data: pd.DataFrame) -> None:
         figure.update_yaxes(scaleanchor="x", scaleratio=1)
 
     if map_view == "Offline coordinate view" and not routes_by_id:
-        st.info("Route geometry is unavailable in the offline view. Run fetch_reference.py to add colored route lines.")
+        st.info("Route geometry is unavailable in the offline view. Run `python -m gtbus.reference` to add colored route lines.")
     st.plotly_chart(figure, width="stretch")
 
 
@@ -394,7 +394,7 @@ def main() -> None:
     data = load_points(str(DATA_DIR))
     if data.empty:
         st.warning(f"No vehicle CSV files found in `{DATA_DIR}`.")
-        st.code("python3 vehicle_heading_collector.py\nstreamlit run dashboard.py")
+        st.code("python3 vehicle_heading_collector.py\nstreamlit run gtbus/dashboard/app.py")
         st.stop()
 
     filtered = filter_data(data)

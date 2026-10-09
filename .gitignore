@@ -1,8 +1,10 @@
 data/*.jsonl
 data/*.csv
-data/vehicle_heading/*.csv
-data/vehicle_heading/.next_tick
-reference/*.json
 __pycache__/
 *.pyc
 .venv/
+.claude/local/
+.claude/*.local.md
+graphify-out/
+.idea/
+.codegraph/

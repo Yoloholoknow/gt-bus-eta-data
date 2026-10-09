@@ -2,6 +2,8 @@ import csv
 from collections import defaultdict
 from datetime import datetime
 
+from gtbus.paths import DATA_DIR
+
 # A vehicle "counts" as stopped below this speed. Known limitation: a bus
 # stuck in traffic while still approaching its target stop can register as
 # stopped here too, inflating dwell time for that visit. If that turns out
@@ -76,17 +78,17 @@ def add_dwell_and_travel(visits):
 
 
 if __name__ == "__main__":
-    positions = load_csv("data/positions.csv")
-    vehicle_estimates = load_csv("data/vehicle_estimates.csv")
+    positions = load_csv(DATA_DIR / "positions.csv")
+    vehicle_estimates = load_csv(DATA_DIR / "vehicle_estimates.csv")
 
     visits = detect_visits(positions, vehicle_estimates)
     visits = add_dwell_and_travel(visits)
     visits.sort(key=lambda v: (v["VehicleID"], v["arrival_ts"]))
 
     fieldnames = ["VehicleID", "RouteID", "RouteStopID", "arrival_ts", "departure_ts", "dwell_seconds", "travel_to_next_seconds"]
-    with open("data/visits.csv", "w", newline="") as f:
+    with open(DATA_DIR / "visits.csv", "w", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(visits)
 
-    print(f"{len(visits)} stop visits written to data/visits.csv")
+    print(f"{len(visits)} stop visits written to {DATA_DIR / "visits.csv"}")

@@ -18,6 +18,9 @@ from zoneinfo import ZoneInfo
 
 import requests
 
+from gtbus.api import BASE_URL
+from gtbus.paths import DATA_DIR, REFERENCE_DIR
+
 
 # Leave empty to track every route. Names are case-insensitive.
 ROUTE_NAME_FILTERS: list[str] = []
@@ -28,11 +31,10 @@ MAX_OBSERVATION_GAP_INTERVALS = 3
 GPS_MAX_UNCHANGED_SECONDS = 30.0
 VISIT_TIMEOUT_SECONDS = 1800.0
 
-BASE_URL = "https://bus.gatech.edu/Services/JSONPRelay.svc/"
-ARRIVAL_TIMES_URL = BASE_URL + "GetStopArrivalTimes"
-VEHICLE_POINTS_URL = BASE_URL + "GetMapVehiclePoints"
-ROUTES_URL = BASE_URL + "GetRoutes"
-STOPS_URL = BASE_URL + "GetStops"
+ARRIVAL_TIMES_URL = f"{BASE_URL}/GetStopArrivalTimes"
+VEHICLE_POINTS_URL = f"{BASE_URL}/GetMapVehiclePoints"
+ROUTES_URL = f"{BASE_URL}/GetRoutes"
+STOPS_URL = f"{BASE_URL}/GetStops"
 EASTERN_TIME = ZoneInfo("America/New_York")
 SOURCE_TIMESTAMP = re.compile(r"^/Date\((-?\d+)(?:[+-]\d{4})?\)/$")
 VisitKey = tuple[int, str, str]  # RouteID, RouteStopID, VehicleID
@@ -752,8 +754,8 @@ def run_tracker(
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Track arrival, 10-meter stop entry, and departure for configured route-stops.")
-    parser.add_argument("--config", default="all_stops.json", help="Route-stop config JSON.")
-    default_output = Path(__file__).resolve().parent / "data" / "stops_timings" / "combined_stop_visits.csv"
+    parser.add_argument("--config", default=str(REFERENCE_DIR / "all_stops.json"), help="Route-stop config JSON.")
+    default_output = DATA_DIR / "stops_timings" / "combined_stop_visits.csv"
     parser.add_argument("--output", default=str(default_output), help="Append-only CSV of completed valid stop visits.")
     parser.add_argument("--poll-seconds", type=float, default=DEFAULT_POLL_SECONDS,
                         help="Target request-start interval per stream, in seconds.")

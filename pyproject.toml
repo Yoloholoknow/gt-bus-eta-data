@@ -1,0 +1,15 @@
+[project]
+name = "gt-bus-eta-data"
+version = "0.1.0"
+description = "GT bus data collection, analysis, and dashboard for ETA research"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "pandas>=3.0.6",
+    "plotly>=7.1.0",
+    "requests>=2.34.2",
+    "streamlit>=1.64.0",
+]
+
+[tool.uv]
+package = false

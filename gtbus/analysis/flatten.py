@@ -2,6 +2,8 @@ import csv
 import glob
 import json
 
+from gtbus.paths import DATA_DIR
+
 FACT_FIELDS = {
     "vehicles": ["VehicleID", "RouteID", "Latitude", "Longitude", "GroundSpeed", "Heading", "IsOnRoute", "IsDelayed", "Seconds"],
     "capacities": ["VehicleID", "Capacity", "CurrentOccupation", "Percentage"],
@@ -10,7 +12,7 @@ FACT_FIELDS = {
 
 def load_polls():
     polls = []
-    for path in sorted(glob.glob("data/*.jsonl")):
+    for path in sorted(glob.glob(str(DATA_DIR / "*.jsonl"))):
         with open(path) as f:
             polls.extend(json.loads(line) for line in f)
     return polls
@@ -96,8 +98,8 @@ def write_csv(rows, path):
 if __name__ == "__main__":
     polls = load_polls()
     print(f"{len(polls)} polls loaded")
-    write_csv(flatten_positions(polls), "data/positions.csv")
-    write_csv(flatten_capacities(polls), "data/capacities.csv")
-    write_csv(flatten_vehicle_estimates(polls), "data/vehicle_estimates.csv")
-    write_csv(flatten_stop_estimates(polls), "data/stop_estimates.csv")
-    write_csv(flatten_stop_arrivals(polls), "data/stop_arrivals.csv")
+    write_csv(flatten_positions(polls), DATA_DIR / "positions.csv")
+    write_csv(flatten_capacities(polls), DATA_DIR / "capacities.csv")
+    write_csv(flatten_vehicle_estimates(polls), DATA_DIR / "vehicle_estimates.csv")
+    write_csv(flatten_stop_estimates(polls), DATA_DIR / "stop_estimates.csv")
+    write_csv(flatten_stop_arrivals(polls), DATA_DIR / "stop_arrivals.csv")
