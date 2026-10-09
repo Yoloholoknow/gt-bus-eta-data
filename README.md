@@ -5,7 +5,7 @@ Collecting GT bus data (`bus.gatech.edu`, no API key needed) and figuring out, a
 ## Setup
 
 ```
-pip install -r requirements.txt
+uv sync
 ```
 
 ## Pipeline
@@ -14,50 +14,66 @@ Four stages, run in order:
 
 **1. Reference data (once)**
 ```
-python3 fetch_reference.py
+python3 -m gtbus.reference
 ```
 Routes, stops, markers, route schedules, map config — the stuff that barely changes. Saved to `reference/`.
 
 **2. Poll (continuously, for the collection window)**
 ```
-python3 poller.py
+python3 -m gtbus.collect.raw_poller
 ```
 Every 5s, hits every live-changing endpoint: vehicle positions, stop estimates (both the per-route and per-vehicle shapes), vehicle capacities, stop arrival times, Twitter feed. Appends one JSON line per poll to `data/YYYY-MM-DD.jsonl`. Ctrl+C to stop.
 
-`fetch_admin_data.py` covers `GetBadgeScanData`/`GetRidershipData` separately. Tested live: `GetBadgeScanData` returns `200 []` (works, but no data configured on this deployment), `GetRidershipData` times out entirely (broken, doesn't respond). Neither is needed anyway — they're fare-tap/ridership counts, not location/timing data, and `GetVehicleCapacities` (in the main loop) already gives a live crowding signal. Kept in the repo for reference only, not part of the pipeline.
+`GetBadgeScanData` returns `200 []` (no data configured) and `GetRidershipData` times out, so neither is polled; `GetVehicleCapacities` already gives a live crowding signal.
 
 **2b. Vehicle heading collector and dashboard (optional)**
 ```
-python3 vehicle_heading_collector.py
-streamlit run dashboard.py
+python3 -m gtbus.collect.vehicle_heading
+streamlit run gtbus/dashboard/app.py
 ```
 
-The heading collector writes one row per vehicle per poll to `data/vehicle_heading/vehicle_points_YYYY-MM-DD.csv` and records request health in a matching `collector_status_YYYY-MM-DD.csv`. The dashboard shows the latest bus map, active-bus counts, route speed summaries, heading distributions, source age, and polling gaps.
+The heading collector writes one row per vehicle per poll to `data/vehicle_heading/vehicle_points_YYYY-MM-DD.csv`. The dashboard shows the latest bus map, active-bus counts, route speed summaries, heading distributions, source age, and polling gaps.
 
 **3. Flatten (after collecting)**
 ```
-python3 flatten.py
+python3 -m gtbus.analysis.flatten
 ```
 Explodes the raw JSONL into flat CSVs anyone can open in Excel/Sheets or load with one line of pandas/DuckDB: `positions.csv`, `capacities.csv`, `vehicle_estimates.csv`, `stop_estimates.csv`, `stop_arrivals.csv`. Raw JSONL stays as the source of truth — this is a read-only projection of it, safe to regenerate anytime.
 
 **4a. Detect stop visits**
 ```
-python3 arrivals.py
+python3 -m gtbus.analysis.arrivals
 ```
 Answers "when did a bus actually reach a stop, and when did it leave." Watches each vehicle's currently-targeted stop (`vehicle_estimates.csv`) for when the target changes, and within that window uses `GroundSpeed` to find when it was actually stopped, not just nearby. Writes `data/visits.csv`: one row per stop visit, with `dwell_seconds` (how long it sat there) and `travel_to_next_seconds` (time from leaving this stop to arriving at the next).
 
-Known limitation: a bus stuck in traffic while still approaching a stop can register as "stopped" too early, inflating that visit's dwell time. If this turns out to matter, the fix is cross-checking GPS distance to the stop's real lat/lon (in `reference/per_route.json`) instead of relying on speed alone — not built yet, flagged in `arrivals.py`.
+Known limitation: a bus stuck in traffic while still approaching a stop can register as "stopped" too early, inflating that visit's dwell time. If this turns out to matter, the fix is cross-checking GPS distance to the stop's real lat/lon (in `reference/per_route.json`) instead of relying on speed alone — not built yet, flagged in `gtbus/analysis/arrivals.py`.
 
 **4b. Summarize**
 ```
-python3 analyze.py
+python3 -m gtbus.analysis.summary
 ```
 Reports vehicle/capacity counts, overall average dwell and inter-stop travel time, and — the specific thing we care about — actual dwell vs. the ~180s expected at the known scheduled-hold stops (North Ave Apts both directions, West Village, Fitten Hall, Weber Loop, GT Competition Center, MARTA Midtown Station, Clough Commons).
 
-Still open for the team: is this dwell/travel data good enough to build a corrected ETA on top of as-is, or does the arrival-detection heuristic need the GPS-distance refinement first? See the comment at the bottom of `analyze.py`.
+Still open for the team: is this dwell/travel data good enough to build a corrected ETA on top of as-is, or does the arrival-detection heuristic need the GPS-distance refinement first? See the comment at the bottom of `gtbus/analysis/summary.py`.
 
 Related issues: gtiosclub/Georgia-Tech-App#237-#241.
 
+
+## Layout
+
+```
+gtbus/
+  api.py, paths.py        shared API client + repo paths
+  reference.py            fetch static routes/stops -> reference/
+  collect/                raw_poller (JSONL), vehicle_heading (CSV), stop_visits (CSV)
+  analysis/               flatten -> arrivals -> summary
+  dashboard/app.py        Streamlit dashboard
+reference/                static route/stop JSON + all_stops.json (stop_visits config)
+data/                     collected data: vehicle_heading/ and stops_timings/ CSVs are
+                          committed snapshots; raw *.jsonl and flattened top-level *.csv are gitignored
+```
+
+Fly runs `vehicle_heading` and `stop_visits` (see `Dockerfile`).
 
 ## Fly
 
@@ -82,9 +98,9 @@ fly machine start <machine-id> -a gt-bus-eta-data
 ```
 The restart policy is `always`, so a stopped machine only stays down if you stop it explicitly; a crash or `fly deploy` brings it back up.
 
-**Pull the volume locally** (machine must be running)
+**Pull the volume locally** (machine must be running). `data/` is both the Fly volume mount (`/app/data`) and the committed local snapshot (formerly `data-backup/`), so pulling overwrites local files with the live volume. Review `git status` before committing.
 ```
-fly ssh sftp get -R -a gt-bus-eta-data /app/data ./data-backup
+fly ssh sftp get -R -a gt-bus-eta-data /app/data ./data
 ```
 Or as a single archive:
 ```

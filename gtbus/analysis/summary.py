@@ -1,5 +1,7 @@
 import pandas as pd
 
+from gtbus.paths import DATA_DIR
+
 # Verified live via GetStops. Same physical stop can have a different
 # RouteStopID per route (e.g. Weber Loop is 419 under Gold, 301 under Blue).
 KNOWN_HOLD_STOPS = {
@@ -23,18 +25,18 @@ EXPECTED_HOLD_SECONDS = 180
 
 
 def summarize_positions():
-    df = pd.read_csv("data/positions.csv")
+    df = pd.read_csv(DATA_DIR / "positions.csv")
     print(f"\n[positions] {len(df)} rows, {df['VehicleID'].nunique()} unique vehicles")
     print(df.groupby("RouteID").size())
 
 
 def summarize_capacities():
-    df = pd.read_csv("data/capacities.csv")
+    df = pd.read_csv(DATA_DIR / "capacities.csv")
     print(f"\n[capacities] {len(df)} rows, avg occupancy {(df['Percentage'].mean() * 100):.1f}%")
 
 
 def summarize_visits():
-    df = pd.read_csv("data/visits.csv")
+    df = pd.read_csv(DATA_DIR / "visits.csv")
     print(f"\n[visits] {len(df)} stop visits detected")
     if not len(df):
         return

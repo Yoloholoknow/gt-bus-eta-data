@@ -16,11 +16,13 @@ from typing import Any
 
 import requests
 
+from gtbus.api import BASE_URL
+from gtbus.paths import DATA_DIR
 
-BASE_URL = "https://bus.gatech.edu/Services/JSONPRelay.svc"
+
 DEFAULT_INTERVAL_SECONDS = 5.0
 DEFAULT_TIMEOUT_SECONDS = 15.0
-DEFAULT_OUTPUT_DIR = Path("data/vehicle_heading")
+DEFAULT_OUTPUT_DIR = DATA_DIR / "vehicle_heading"
 TICK_STATE_FILENAME = ".next_tick"
 
 POINT_COLUMNS = [
