@@ -84,7 +84,7 @@ The restart policy is `always`, so a stopped machine only stays down if you stop
 
 **Pull the volume locally** (machine must be running)
 ```
-fly ssh sftp get -R -a gt-bus-eta-data /app/data ./data-backup
+fly ssh sftp get -R -a gt-bus-eta-data /app/data ./data
 ```
 Or as a single archive:
 ```
