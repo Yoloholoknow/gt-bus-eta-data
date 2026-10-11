@@ -10,6 +10,17 @@ pip install -r requirements.txt
 
 ## Pipeline
 
+**Local ETA exploration dashboard**
+
+The Streamlit app reads `data/stops_timings/combined_stop_visits.csv` without modifying it and uses saved route stop order from `reference/routes.json` to estimate between-stop and multi-stop elapsed times. Run it from the repository root:
+
+```
+pip install -r requirements.txt
+streamlit run eta_explorer.py
+```
+
+It reports 30-minute local-time medians, 90th percentiles, and sample counts for dwell, consecutive-stop travel, and origin-to-destination horizons of 2–5 stops. Select one route at a time; its route color appears beside the selector, while graph lines are colored by human-readable stop name. The dashboard documents its timestamp, interval, and sparse-sample assumptions, and notes whether vehicle GPS collector files are present. GPS files are not used by these baseline summaries.
+
 Four stages, run in order:
 
 **1. Reference data (once)**
