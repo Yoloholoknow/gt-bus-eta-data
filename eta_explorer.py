@@ -81,6 +81,8 @@ def remove_outliers(frame, value, groups, minimum=8):
 
 
 def add_stats(frame, metric, min_samples):
+    if frame.empty:
+        return frame.assign(summary=pd.Series(dtype="string"))
     med = frame["median"].map(lambda x: f"{x:.0f}s")
     p90 = frame["p90"].map(lambda x: f"{x:.0f}s")
     low_samples = frame["samples"] < min_samples
@@ -91,15 +93,15 @@ def add_stats(frame, metric, min_samples):
     return frame.assign(summary=med + " median · " + p90 + " p90 · n=" + frame["samples"].astype(str) + note)
 
 
-def apply_select_all(names):
-    selected = st.session_state["select_all_stops"]
+def apply_select_all(names, group):
+    selected = st.session_state[f"select_all_{group}"]
     for index, _ in enumerate(names):
-        st.session_state[f"stop_{index}"] = selected
+        st.session_state[f"{group}_{index}"] = selected
 
 
-def update_select_all(names):
-    st.session_state["select_all_stops"] = all(
-        st.session_state.get(f"stop_{index}", False) for index, _ in enumerate(names)
+def update_select_all(names, group):
+    st.session_state[f"select_all_{group}"] = all(
+        st.session_state.get(f"{group}_{index}", False) for index, _ in enumerate(names)
     )
 
 
@@ -121,18 +123,41 @@ with st.sidebar:
 base = data[data["_route_name"] == selected_route].copy()
 base = base.dropna(subset=["at_stop_time"])
 base["time_bin"] = clock_bin(base["at_stop_time"], bin_minutes)
+base["_service_date"] = base["at_stop_time"].dt.strftime("%Y-%m-%d")
+available_dates = sorted(base["_service_date"].dropna().unique())
 stop_names = sorted(base["stop_name"].dropna().unique())
 stop_colors = px.colors.qualitative.Dark24 + px.colors.qualitative.Light24
 stop_palette = {name: stop_colors[index % len(stop_colors)] for index, name in enumerate(stop_names)}
 with st.sidebar:
+    st.markdown("**Dates to include**")
+    if "select_all_dates" not in st.session_state:
+        st.session_state["select_all_dates"] = True
+    st.checkbox("Select all dates", key="select_all_dates", on_change=apply_select_all,
+                args=(available_dates, "dates"))
+    selected_dates = []
+    for index, visit_date in enumerate(available_dates):
+        key = f"dates_{index}"
+        if key not in st.session_state:
+            st.session_state[key] = True
+        if st.checkbox(visit_date, key=key, on_change=update_select_all,
+                       args=(available_dates, "dates")):
+            selected_dates.append(visit_date)
     st.markdown("**Stops to display**")
-    st.checkbox("Select all stops", value=True, key="select_all_stops", on_change=apply_select_all, args=(stop_names,))
+    if "select_all_stops" not in st.session_state:
+        st.session_state["select_all_stops"] = True
+    st.checkbox("Select all stops", key="select_all_stops", on_change=apply_select_all,
+                args=(stop_names, "stops"))
     selected_stops = []
     for index, stop_name in enumerate(stop_names):
-        if st.checkbox(stop_name, value=True, key=f"stop_{index}", on_change=update_select_all, args=(stop_names,)):
+        key = f"stops_{index}"
+        if key not in st.session_state:
+            st.session_state[key] = True
+        if st.checkbox(stop_name, key=key, on_change=update_select_all,
+                       args=(stop_names, "stops")):
             selected_stops.append(stop_name)
-all_route_visits = base.copy()
+all_route_visits = base[base["_service_date"].isin(selected_dates)].copy()
 base = base[base["stop_name"].isin(selected_stops)].copy()
+base = base[base["_service_date"].isin(selected_dates)].copy()
 
 st.info(
     "Filters and assumptions: visits with missing timestamps are omitted; dwell uses the recorded geofence duration. "
@@ -170,7 +195,7 @@ def make_pairs(visits, sequences):
         ordered_stops = sequences.get(route, [])
         if not ordered_stops:
             continue
-        for (_, vehicle), bus in group.groupby(["_route_id", "vehicle_number"], dropna=False, sort=False):
+        for (_, vehicle, _), bus in group.groupby(["_route_id", "vehicle_number", "_service_date"], dropna=False, sort=False):
             bus = bus.sort_values("at_stop_time")
             rows = bus.to_dict("records")
             # Pair visits by route order, allowing a skipped observation but never reverse travel.

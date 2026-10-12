@@ -19,7 +19,7 @@ pip install -r requirements.txt
 streamlit run eta_explorer.py
 ```
 
-It reports 30-minute local-time medians, 90th percentiles, and sample counts for dwell, consecutive-stop travel, and origin-to-destination horizons of 2–5 stops. Select one route at a time; its route color appears beside the selector, while graph lines are colored by human-readable stop name. The dashboard documents its timestamp, interval, and sparse-sample assumptions, and notes whether vehicle GPS collector files are present. GPS files are not used by these baseline summaries.
+It reports local-time medians, 90th percentiles, and sample counts for dwell, consecutive-stop travel, and origin-to-destination horizons of 2–5 stops. Select one route at a time, adjust the time-bin width from 30 minutes to 4 hours, and use date and stop checkboxes to filter the view. Its route color appears beside the selector, while graph lines are colored by human-readable stop name. The dashboard documents its timestamp, interval, and sparse-sample assumptions, and notes whether vehicle GPS collector files are present. GPS files are not used by these baseline summaries.
 
 Four stages, run in order:
 
