@@ -1,0 +1,1582 @@
+[
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:20:17.789688+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 7.99928417304,
+        "Heading": 340,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.77442,
+        "Longitude": -84.40241,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 15,
+        "TimeStamp": "/Date(1792444832000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:20:21.291011+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 11.99892625956,
+        "Heading": 356,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.77461,
+        "Longitude": -84.40252,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 16,
+        "TimeStamp": "/Date(1792444837000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:20:24.729451+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 11.99892625956,
+        "Heading": 356,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.77461,
+        "Longitude": -84.40252,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 13,
+        "TimeStamp": "/Date(1792444837000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:20:28.370273+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 9.9991052163,
+        "Heading": 355,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.774923097,
+        "Longitude": -84.4025365214,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 14,
+        "TimeStamp": "/Date(1792444842000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:20:31.879484+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 3.99964208652,
+        "Heading": 16,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.774923097,
+        "Longitude": -84.4025365214,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 17,
+        "TimeStamp": "/Date(1792444847000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:20:35.390743+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 3.99964208652,
+        "Heading": 354,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.774923097,
+        "Longitude": -84.4025365214,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 17,
+        "TimeStamp": "/Date(1792444852000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:20:38.833022+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 3.99964208652,
+        "Heading": 354,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.774923097,
+        "Longitude": -84.4025365214,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 14,
+        "TimeStamp": "/Date(1792444852000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:20:42.196608+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 0,
+        "Heading": 0,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.774923097,
+        "Longitude": -84.4025365214,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 16,
+        "TimeStamp": "/Date(1792444857000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:20:45.724955+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 0,
+        "Heading": 0,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.774923097,
+        "Longitude": -84.4025365214,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 17,
+        "TimeStamp": "/Date(1792444862000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:20:49.075947+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 0,
+        "Heading": 0,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.774923097,
+        "Longitude": -84.4025365214,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 14,
+        "TimeStamp": "/Date(1792444862000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:20:52.882786+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 0,
+        "Heading": 0,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.774923097,
+        "Longitude": -84.4025365214,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 15,
+        "TimeStamp": "/Date(1792444867000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:20:56.311452+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 0,
+        "Heading": 0,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.774923097,
+        "Longitude": -84.4025365214,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 17,
+        "TimeStamp": "/Date(1792444872000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:20:59.673320+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 0,
+        "Heading": 0,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.774923097,
+        "Longitude": -84.4025365214,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 14,
+        "TimeStamp": "/Date(1792444872000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:21:03.009298+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 2.99973156489,
+        "Heading": 328,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.7751,
+        "Longitude": -84.40265,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 15,
+        "TimeStamp": "/Date(1792444877000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:21:06.304218+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 2.99973156489,
+        "Heading": 356,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.7751,
+        "Longitude": -84.40265,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 17,
+        "TimeStamp": "/Date(1792444882000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:21:09.695709+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 2.99973156489,
+        "Heading": 356,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.7751,
+        "Longitude": -84.40265,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 13,
+        "TimeStamp": "/Date(1792444882000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:21:13.119431+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 5.99946312978,
+        "Heading": 10,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.77528,
+        "Longitude": -84.40256,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 16,
+        "TimeStamp": "/Date(1792444887000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:21:16.443448+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 0.99991052163,
+        "Heading": 7,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.77536,
+        "Longitude": -84.40254,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 16,
+        "TimeStamp": "/Date(1792444892000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:21:19.783795+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 0.99991052163,
+        "Heading": 7,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.77536,
+        "Longitude": -84.40254,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 14,
+        "TimeStamp": "/Date(1792444892000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:21:23.151851+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 6.99937365141,
+        "Heading": 7,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.77542,
+        "Longitude": -84.40253,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 14,
+        "TimeStamp": "/Date(1792444897000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:21:26.630259+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 11.99892625956,
+        "Heading": 2,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.77562,
+        "Longitude": -84.40251,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 17,
+        "TimeStamp": "/Date(1792444902000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:21:30.162209+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 15.00089476074,
+        "Heading": 3,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.7759,
+        "Longitude": -84.4025,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 17,
+        "TimeStamp": "/Date(1792444907000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:21:33.484130+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 15.00089476074,
+        "Heading": 3,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.7759,
+        "Longitude": -84.4025,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 15,
+        "TimeStamp": "/Date(1792444907000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:21:37.084375+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 18.00062632563,
+        "Heading": 5,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.77623,
+        "Longitude": -84.40248,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 16,
+        "TimeStamp": "/Date(1792444912000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:21:40.621862+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 18.00062632563,
+        "Heading": 5,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.7766,
+        "Longitude": -84.40244,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 17,
+        "TimeStamp": "/Date(1792444917000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:21:44.012311+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 18.00062632563,
+        "Heading": 5,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.7766,
+        "Longitude": -84.40244,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 14,
+        "TimeStamp": "/Date(1792444917000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:21:47.377421+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 15.00089476074,
+        "Heading": 3,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.77696,
+        "Longitude": -84.40242,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 16,
+        "TimeStamp": "/Date(1792444922000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:21:51.046208+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 0.99991052163,
+        "Heading": 1,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.77716,
+        "Longitude": -84.40241,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 17,
+        "TimeStamp": "/Date(1792444927000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:21:54.765582+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 0.99991052163,
+        "Heading": 1,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.77716,
+        "Longitude": -84.40241,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 13,
+        "TimeStamp": "/Date(1792444927000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:21:58.214051+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 6.99937365141,
+        "Heading": 356,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.77721,
+        "Longitude": -84.40241,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 15,
+        "TimeStamp": "/Date(1792444932000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:22:01.604372+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 15.00089476074,
+        "Heading": 18,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.77744,
+        "Longitude": -84.40237,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 16,
+        "TimeStamp": "/Date(1792444937000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:22:05.254698+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 17.000715804,
+        "Heading": 27,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.77773,
+        "Longitude": -84.40221,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 17,
+        "TimeStamp": "/Date(1792444942000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:22:08.606784+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 17.000715804,
+        "Heading": 27,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.77773,
+        "Longitude": -84.40221,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 15,
+        "TimeStamp": "/Date(1792444942000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:22:12.309219+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 17.000715804,
+        "Heading": 51,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.77796239,
+        "Longitude": -84.40201458,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 15,
+        "TimeStamp": "/Date(1792444947000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:22:15.757192+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 17.000715804,
+        "Heading": 51,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.77796239,
+        "Longitude": -84.40201458,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 13,
+        "TimeStamp": "/Date(1792444947000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:22:19.152416+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 15.00089476074,
+        "Heading": 54,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.77817,
+        "Longitude": -84.40165,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 14,
+        "TimeStamp": "/Date(1792444952000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:22:22.505084+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 4.99955260815,
+        "Heading": 53,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.7783,
+        "Longitude": -84.40145,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 16,
+        "TimeStamp": "/Date(1792444957000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:22:25.936116+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 7.99928417304,
+        "Heading": 53,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.77833,
+        "Longitude": -84.4014,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 17,
+        "TimeStamp": "/Date(1792444962000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:22:29.386741+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 7.99928417304,
+        "Heading": 53,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.77833,
+        "Longitude": -84.4014,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 13,
+        "TimeStamp": "/Date(1792444962000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:22:32.729320+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 11.99892625956,
+        "Heading": 67,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.77845,
+        "Longitude": -84.40117,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 15,
+        "TimeStamp": "/Date(1792444967000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:22:36.133734+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 11.99892625956,
+        "Heading": 67,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.77845,
+        "Longitude": -84.40117,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 13,
+        "TimeStamp": "/Date(1792444967000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:22:39.672192+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 8.99919469467,
+        "Heading": 93,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.77845,
+        "Longitude": -84.400824,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 13,
+        "TimeStamp": "/Date(1792444972000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:22:43.353515+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 5.99946312978,
+        "Heading": 89,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.77845,
+        "Longitude": -84.400824,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 15,
+        "TimeStamp": "/Date(1792444977000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:22:47.137987+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 0,
+        "Heading": 0,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.77845,
+        "Longitude": -84.400824,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 16,
+        "TimeStamp": "/Date(1792444982000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:22:50.487703+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 0,
+        "Heading": 0,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.77845,
+        "Longitude": -84.400824,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 18,
+        "TimeStamp": "/Date(1792444987000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:22:53.863212+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 0,
+        "Heading": 0,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.77845,
+        "Longitude": -84.400824,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 14,
+        "TimeStamp": "/Date(1792444987000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:22:57.432284+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 0,
+        "Heading": 0,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.77845,
+        "Longitude": -84.400824,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 16,
+        "TimeStamp": "/Date(1792444992000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:23:00.774483+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 2.99973156489,
+        "Heading": 80,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.77845,
+        "Longitude": -84.400824,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 17,
+        "TimeStamp": "/Date(1792444997000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:23:04.148552+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 2.99973156489,
+        "Heading": 80,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.77845,
+        "Longitude": -84.400824,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 14,
+        "TimeStamp": "/Date(1792444997000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:23:07.628980+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 8.99919469467,
+        "Heading": 88,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.7785,
+        "Longitude": -84.40046,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 15,
+        "TimeStamp": "/Date(1792445002000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:23:10.996166+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 11.99892625956,
+        "Heading": 104,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.77846,
+        "Longitude": -84.40019,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 17,
+        "TimeStamp": "/Date(1792445007000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:23:14.529556+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 11.99892625956,
+        "Heading": 104,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.77846,
+        "Longitude": -84.40019,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 13,
+        "TimeStamp": "/Date(1792445007000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:23:18.116613+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 11.99892625956,
+        "Heading": 104,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.77839,
+        "Longitude": -84.3999,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 15,
+        "TimeStamp": "/Date(1792445012000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:23:21.471433+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 8.99919469467,
+        "Heading": 104,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.77836,
+        "Longitude": -84.39956,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 17,
+        "TimeStamp": "/Date(1792445017000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:23:25.095249+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 8.99919469467,
+        "Heading": 104,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.77836,
+        "Longitude": -84.39956,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 13,
+        "TimeStamp": "/Date(1792445017000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:23:28.471286+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 6.99937365141,
+        "Heading": 99,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.7783,
+        "Longitude": -84.3994,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 15,
+        "TimeStamp": "/Date(1792445022000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:23:32.305287+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 0.99991052163,
+        "Heading": 99,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.77829,
+        "Longitude": -84.39936,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 15,
+        "TimeStamp": "/Date(1792445027000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:23:35.656863+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 0.99991052163,
+        "Heading": 99,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.77829,
+        "Longitude": -84.39936,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 13,
+        "TimeStamp": "/Date(1792445027000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:23:39.046045+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 15.00089476074,
+        "Heading": 91,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.77827,
+        "Longitude": -84.39914,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 14,
+        "TimeStamp": "/Date(1792445032000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:23:42.975250+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 17.000715804,
+        "Heading": 89,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.77827,
+        "Longitude": -84.39877,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 15,
+        "TimeStamp": "/Date(1792445037000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:23:46.386582+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 15.00089476074,
+        "Heading": 92,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.77827,
+        "Longitude": -84.39839,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 17,
+        "TimeStamp": "/Date(1792445042000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:23:50.051255+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 9.9991052163,
+        "Heading": 93,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.77832,
+        "Longitude": -84.398084,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 18,
+        "TimeStamp": "/Date(1792445047000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:23:53.725773+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 9.9991052163,
+        "Heading": 93,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.77832,
+        "Longitude": -84.398084,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 14,
+        "TimeStamp": "/Date(1792445047000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:23:57.075139+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 0,
+        "Heading": 0,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.77832,
+        "Longitude": -84.398084,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 16,
+        "TimeStamp": "/Date(1792445052000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:24:00.395749+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 0,
+        "Heading": 0,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.77832,
+        "Longitude": -84.398084,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 17,
+        "TimeStamp": "/Date(1792445057000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:24:03.884085+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 0,
+        "Heading": 0,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.77832,
+        "Longitude": -84.398084,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 14,
+        "TimeStamp": "/Date(1792445057000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:24:07.246553+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 0,
+        "Heading": 0,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.77832,
+        "Longitude": -84.398084,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 16,
+        "TimeStamp": "/Date(1792445062000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:24:10.639413+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 5.99946312978,
+        "Heading": 93,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.77832,
+        "Longitude": -84.398084,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 17,
+        "TimeStamp": "/Date(1792445067000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:24:14.031251+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 5.99946312978,
+        "Heading": 93,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.77832,
+        "Longitude": -84.398084,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 15,
+        "TimeStamp": "/Date(1792445067000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:24:17.381908+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 6.99937365141,
+        "Heading": 92,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.77824,
+        "Longitude": -84.39784,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 15,
+        "TimeStamp": "/Date(1792445072000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:24:20.724875+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 10.99901573793,
+        "Heading": 92,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.77824,
+        "Longitude": -84.39761,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 18,
+        "TimeStamp": "/Date(1792445077000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:24:24.374091+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 10.99901573793,
+        "Heading": 92,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.77824,
+        "Longitude": -84.39761,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 14,
+        "TimeStamp": "/Date(1792445077000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:24:27.799670+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 5.99946312978,
+        "Heading": 94,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.778179,
+        "Longitude": -84.397328,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 16,
+        "TimeStamp": "/Date(1792445082000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:24:31.648040+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 0,
+        "Heading": 0,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.778179,
+        "Longitude": -84.397328,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 17,
+        "TimeStamp": "/Date(1792445087000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:24:35.145685+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 0,
+        "Heading": 0,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.778179,
+        "Longitude": -84.397328,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 18,
+        "TimeStamp": "/Date(1792445092000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:24:38.478251+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 0,
+        "Heading": 0,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.778179,
+        "Longitude": -84.397328,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 15,
+        "TimeStamp": "/Date(1792445092000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:24:41.961880+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 0.99991052163,
+        "Heading": 92,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.778179,
+        "Longitude": -84.397328,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 16,
+        "TimeStamp": "/Date(1792445097000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:24:45.678764+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 0.99991052163,
+        "Heading": 92,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.778179,
+        "Longitude": -84.397328,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 13,
+        "TimeStamp": "/Date(1792445097000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  },
+  {
+    "kind": "gps",
+    "received_at": "2026-10-19T15:24:49.466058+00:00",
+    "error": "",
+    "data": [
+      {
+        "GroundSpeed": 16.00080528237,
+        "Heading": 93,
+        "IsDelayed": false,
+        "IsOnRoute": true,
+        "Latitude": 33.77824,
+        "Longitude": -84.39711,
+        "Name": "2306",
+        "RouteID": 29,
+        "Seconds": 13,
+        "TimeStamp": "/Date(1792445102000-0600)/",
+        "VehicleID": 31
+      }
+    ]
+  }
+]
