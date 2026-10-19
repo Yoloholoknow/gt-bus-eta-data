@@ -66,9 +66,9 @@ def summary(frame, value, dims):
     ).reset_index()
 
 
-def remove_outliers(frame, value, groups, minimum=8):
+def remove_outliers(frame, value, groups, minimum=8, enabled=True):
     """Drop Tukey 1.5×IQR outliers within comparable route/stop/time groups."""
-    if frame.empty:
+    if frame.empty or not enabled:
         return frame.copy(), 0
     grouped = frame.groupby(groups, dropna=False)[value]
     q1 = grouped.transform(lambda values: values.quantile(.25))
@@ -118,6 +118,7 @@ with st.sidebar:
     bin_minutes = st.select_slider("Time bin size", options=[30, 60, 90, 120, 150, 180, 210, 240], value=30,
                                    format_func=lambda n: f"{n // 60} hr" if n % 60 == 0 and n >= 60 else f"{n} min")
     min_samples = st.number_input("Mark bins sparse below samples", 1, 100, 10)
+    exclude_outliers = st.checkbox("Exclude outliers", value=True)
     st.markdown(f"<span style='display:inline-block;width:12px;height:12px;background:{route_palette[selected_route]};border-radius:50%;margin-right:7px'></span>{selected_route}", unsafe_allow_html=True)
 
 base = data[data["_route_name"] == selected_route].copy()
@@ -163,9 +164,10 @@ st.info(
     "Filters and assumptions: visits with missing timestamps are omitted; dwell uses the recorded geofence duration. "
     "Travel is departure-to-next-stop arrival; zero or negative intervals are excluded. Multi-stop elapsed time runs "
     "from origin arrival to destination arrival and therefore includes dwell at intermediate stops. Route stop order "
-    f"comes from the saved reference data. Bins use {bin_minutes}-minute local-time windows. Outliers are removed within each "
-    "route, stop pair/horizon, and time bin using Tukey 1.5×IQR fences when a group has at least 8 observations; "
-    "smaller groups are left intact and flagged sparse. Summaries use median and p90 of retained observations. "
+    f"comes from the saved reference data. Bins use {bin_minutes}-minute local-time windows. "
+    + ("Outliers are removed within each route, stop pair/horizon, and time bin using Tukey 1.5×IQR fences when a group has at least 8 observations; "
+       "smaller groups are left intact and flagged sparse. " if exclude_outliers else "Statistical IQR outlier filtering is off. ")
+    + "Summaries use median and p90 of included observations. "
     f"Bins with fewer than {min_samples} retained observations are marked sparse; if p90 is also greater than "
     "1.5× median, they are marked UNSURE due to low coverage and high variability."
 )
@@ -173,7 +175,7 @@ st.info(
 st.subheader("Dwell at each stop")
 dwell = base.dropna(subset=["dwell_seconds"])
 dwell = dwell[(dwell["dwell_seconds"] >= 0) & (dwell["dwell_seconds"] < 3600)]
-dwell, dwell_removed = remove_outliers(dwell, "dwell_seconds", ["stop_name", "time_bin", "route_color"])
+dwell, dwell_removed = remove_outliers(dwell, "dwell_seconds", ["stop_name", "time_bin", "route_color"], enabled=exclude_outliers)
 dwell_stats = add_stats(summary(dwell, "dwell_seconds", ["stop_name", "time_bin", "route_color"]), "dwell_seconds", min_samples)
 if len(dwell_stats):
     dwell_stats = dwell_stats.sort_values(["stop_name", "time_bin"])
@@ -184,7 +186,8 @@ if len(dwell_stats):
                   labels={"median": "Median seconds", "time": "Local time"})
     fig.update_layout(height=440)
     st.plotly_chart(fig, width="stretch")
-    st.caption(f"Stop names are shown in the legend; hover for p90 and sample count. Values above one hour are excluded; {dwell_removed:,} additional IQR outliers removed.")
+    outlier_note = f"{dwell_removed:,} IQR outliers removed." if exclude_outliers else "IQR outlier filtering is off."
+    st.caption(f"Stop names are shown in the legend; hover for p90 and sample count. Values above one hour are excluded; {outlier_note}")
 else:
     st.warning("No dwell observations match the selected routes.")
 
@@ -240,7 +243,7 @@ if len(horizons):
     horizons = horizons[horizons["origin"].isin(selected_stops)]
 st.subheader("Travel between consecutive named stops")
 if len(pairs):
-    pairs, pairs_removed = remove_outliers(pairs, "seconds", ["origin", "destination", "time_bin", "route"])
+    pairs, pairs_removed = remove_outliers(pairs, "seconds", ["origin", "destination", "time_bin", "route"], enabled=exclude_outliers)
     ps = add_stats(summary(pairs, "seconds", ["origin", "destination", "time_bin", "route"]), "seconds", min_samples)
     ps = ps.sort_values(["origin", "destination", "time_bin"])
     ps["time"] = ps["time_bin"].map(lambda value: bin_label(value, bin_minutes))
@@ -250,7 +253,8 @@ if len(pairs):
         color_discrete_map=stop_palette, hover_data={"origin": True, "destination": True, "p90": True, "samples": True, "summary": True},
         category_orders={"time": time_label_order(bin_minutes)}, labels={"median": "Median seconds", "time": "Local time"},
         title="Median travel time · departure to next stop"), width="stretch")
-    st.caption(f"Line colors identify origin stops; hover for the destination, p90, and sample count. Only positive departure-to-arrival intervals are included; {pairs_removed:,} IQR outliers removed.")
+    outlier_note = f"{pairs_removed:,} IQR outliers removed." if exclude_outliers else "IQR outlier filtering is off."
+    st.caption(f"Line colors identify origin stops; hover for the destination, p90, and sample count. Only positive departure-to-arrival intervals are included; {outlier_note}")
 else:
     st.warning("No valid consecutive-stop travel intervals are available for these routes.")
 
@@ -258,7 +262,7 @@ st.subheader(f"Cumulative time · {horizon} stops ahead")
 if len(horizons):
     hs = horizons[horizons["hops"] == horizon]
     if len(hs):
-        hs, horizons_removed = remove_outliers(hs, "seconds", ["origin", "destination", "time_bin", "route", "hops"])
+        hs, horizons_removed = remove_outliers(hs, "seconds", ["origin", "destination", "time_bin", "route", "hops"], enabled=exclude_outliers)
         hs = add_stats(summary(hs, "seconds", ["origin", "destination", "time_bin", "route"]), "seconds", min_samples)
         hs = hs.sort_values(["origin", "destination", "time_bin"])
         hs["time"] = hs["time_bin"].map(lambda value: bin_label(value, bin_minutes))
@@ -268,7 +272,8 @@ if len(horizons):
             color_discrete_map=stop_palette, hover_data={"origin": True, "destination": True, "p90": True, "samples": True, "summary": True},
             category_orders={"time": time_label_order(bin_minutes)}, labels={"median": "Median elapsed seconds", "time": "Origin local time"},
             title="Origin arrival to destination arrival"), width="stretch")
-        st.caption(f"Line colors identify origin stops; hover for the destination, p90, and sample count. Intermediate dwell is included; dwell at the origin is excluded. {horizons_removed:,} IQR outliers removed.")
+        outlier_note = f"{horizons_removed:,} IQR outliers removed." if exclude_outliers else "IQR outlier filtering is off."
+        st.caption(f"Line colors identify origin stops; hover for the destination, p90, and sample count. Intermediate dwell is included; dwell at the origin is excluded. {outlier_note}")
     else:
         st.warning(f"No valid {horizon}-stop observations are available for these routes.")
 else:

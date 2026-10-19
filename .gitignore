@@ -6,3 +6,5 @@ reference/*.json
 __pycache__/
 *.pyc
 .venv/
+prediction/averages.csv
+data/prediction_eval/
