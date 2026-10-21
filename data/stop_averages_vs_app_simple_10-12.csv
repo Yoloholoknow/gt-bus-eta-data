@@ -1,0 +1,127 @@
+route_id,route,stop_order,route_stop_id,stop_name,app_seconds_at_stop,app_seconds_to_next,visits,live_avg_dwell,live_median_dwell,live_avg_to_next,live_median_to_next,dwell_diff_avg_minus_app,to_next_diff_avg_minus_app
+17,Green,50,195,Baker Building on State St.,0,41,242.0,20.1,17.4,8.9,5.7,20.1,-32.1
+17,Green,60,196,Kendeda Building,0,53,251.0,118.9,85.0,42.3,34.3,118.9,-10.7
+17,Green,70,208,Center St. Apartments & Hemphill Ave,0,27,266.0,89.4,55.0,39.9,39.9,89.4,12.9
+17,Green,75,418,Georgia Tech Police Department,0,59,203.0,36.5,29.4,51.8,40.6,36.5,-7.2
+17,Green,80,206,Hemphill Ave & Curran St,0,127,264.0,45.9,32.4,78.8,51.5,45.9,-48.2
+17,Green,90,209,GT Competition Center (575 14th Street),180,133,195.0,17.2,12.1,316.5,297.5,-162.8,183.5
+17,Green,100,210,14th St & State St,0,30,264.0,31.1,27.1,0.6,0.0,31.1,-29.4
+17,Green,110,211,GTRI Conference Center,0,120,242.0,39.6,30.6,138.2,134.4,39.6,18.2
+17,Green,120,212,McCamish & 10th St.,0,46,204.0,10.6,7.5,39.0,33.0,10.6,-7.0
+17,Green,130,213,Graduate Living Center,0,60,275.0,30.7,29.3,43.6,44.3,30.7,-16.4
+18,Emory,1,214,Cherry Emerson,0,52,46.0,27.3,26.0,11.0,11.3,27.3,-41.0
+18,Emory,10,225,Klaus Building EB,10,301,46.0,25.4,25.2,300.6,285.0,15.4,-0.4
+18,Emory,20,215,10th St & MARTA EB,0,278,45.0,32.2,30.3,311.1,321.6,32.2,33.1
+18,Emory,30,216,Piedmont Road EB,0,560,45.0,20.3,20.1,663.8,642.8,20.3,103.8
+18,Emory,40,217,Clifton Road at Wesley EB,0,258,29.0,15.6,12.2,,,15.6,
+18,Emory,60,219,HSRB Emory,0,225,,,,,,,
+18,Emory,70,220,Woodruff Circle Transit Hub,0,318,42.0,53.9,39.8,255.7,258.5,53.9,-62.3
+18,Emory,90,222,Clifton Road at Wesley WB,0,566,25.0,15.3,16.5,629.8,624.0,15.3,63.8
+18,Emory,100,223,Piedmont Road WB,0,349,36.0,23.9,24.3,354.0,333.7,23.9,5.0
+18,Emory,110,224,10th St & MARTA WB,0,261,30.0,32.8,28.7,255.1,261.3,32.8,-5.9
+18,Emory,120,478,Baker Building on State St.,10,81,27.0,7.3,7.1,593.2,583.3,-2.7,512.2
+20,Red,1,250,North Avenue Apts - To West Campus,180,172,278.0,171.9,158.4,108.1,99.5,-8.1,-63.9
+20,Red,20,264,Brown Residence Hall,10,54,142.0,25.1,24.9,10.8,11.0,15.1,-43.2
+20,Red,30,265,Techwood Dr & Field Residence Hall,10,63,281.0,28.7,27.3,29.8,28.6,18.7,-33.2
+20,Red,40,266,Techwood & 5th  - North,10,54,276.0,62.6,66.3,8.8,6.7,52.6,-45.2
+20,Red,50,267,Russ Chandler Stadium,10,40,277.0,29.2,27.0,3.4,5.3,19.2,-36.6
+20,Red,60,268,Klaus Building WB,10,54,270.0,34.0,33.2,16.3,16.6,24.0,-37.7
+20,Red,70,269,Nanotechnology,10,32,272.0,42.4,35.4,0.0,0.0,32.4,-32.0
+20,Red,80,270,Kendeda Building,10,53,287.0,36.4,32.1,32.7,27.8,26.4,-20.3
+20,Red,90,274,Center St. Apartments & Hemphill Ave,10,50,273.0,36.0,30.3,15.1,11.6,26.0,-34.9
+20,Red,100,272,Paper Tricentennial,10,110,280.0,115.5,64.2,80.7,61.3,105.5,-29.3
+20,Red,110,273,West Village,180,57,266.0,114.8,69.0,17.4,16.8,-65.2,-39.6
+20,Red,120,271,8th St & Hemphill Ave ,10,43,281.0,31.0,24.6,7.6,5.9,21.0,-35.4
+20,Red,130,275,Ferst Dr & Hemphill Ave,10,67,267.0,35.2,33.1,36.1,33.2,25.2,-30.9
+20,Red,140,276,Cherry Emerson,10,44,280.0,29.9,29.0,8.9,6.2,19.9,-35.1
+20,Red,150,277,Klaus Building EB,10,87,275.0,34.3,33.8,53.9,51.1,24.3,-33.1
+20,Red,160,278,Techwood Dr & 5th St - South,10,50,279.0,41.8,32.9,29.6,17.0,31.8,-20.4
+20,Red,170,279,Techwood Dr & Bobby Dodd Way,10,173,281.0,29.6,28.2,99.5,97.7,19.6,-73.5
+20,Red,180,280,COP & North Ave.,10,39,256.0,11.2,7.8,1.5,0.0,1.2,-37.5
+21,Blue,1,299,Fitten Hall,180,155,290.0,52.6,37.9,85.8,76.0,-127.4,-69.2
+21,Blue,20,282,West Village,0,53,291.0,120.1,73.5,15.4,16.4,120.1,-37.6
+21,Blue,30,283,8th St & Hemphill Ave ,0,48,294.0,30.2,26.4,11.5,11.2,30.2,-36.5
+21,Blue,40,284,Couch Park,0,64,268.0,15.7,11.3,33.6,32.1,15.7,-30.4
+21,Blue,50,285,CRC & Stamps Health,0,90,290.0,40.9,35.7,46.0,44.8,40.9,-44.0
+21,Blue,60,300,Ferst Drive & Student Center,0,58,298.0,28.6,28.1,23.5,22.7,28.6,-34.5
+21,Blue,70,301,Weber Loop,180,210,293.0,128.0,65.2,266.8,222.9,-52.0,56.8
+21,Blue,80,302,COP & North Ave.,0,91,227.0,8.9,7.9,17.6,16.9,8.9,-73.4
+21,Blue,90,289,North Avenue Apts - To East Campus,180,138,214.0,144.4,110.6,121.5,120.5,-35.6,-16.5
+21,Blue,100,303,Ferst Dr & Cherry St,0,29,289.0,30.7,28.4,0.3,0.3,30.7,-28.7
+21,Blue,110,463,Weber Building,0,50,258.0,66.9,40.2,17.3,12.0,66.9,-32.7
+21,Blue,120,305,Student Center,0,86,218.0,28.2,26.6,41.6,39.7,28.2,-44.4
+21,Blue,130,306,Exhibition Hall,0,112,278.0,58.9,49.8,68.7,62.8,58.9,-43.3
+23,Weekend Atlantic Station,1,312,Fitten Hall,180,155,14.0,33.4,31.6,76.6,74.6,-146.6,-78.4
+23,Weekend Atlantic Station,20,313,West Village,180,57,14.0,194.9,172.5,16.6,16.0,14.9,-40.4
+23,Weekend Atlantic Station,30,314,8th St & Hemphill Ave ,0,43,14.0,20.2,18.4,7.1,5.8,20.2,-35.9
+23,Weekend Atlantic Station,40,315,Ferst Dr & Hemphill Ave,0,59,14.0,21.7,16.6,36.6,33.0,21.7,-22.4
+23,Weekend Atlantic Station,50,316,Krone Engineered Biosystems Building on State St.,0,84,14.0,31.3,26.9,89.0,89.4,31.3,5.0
+23,Weekend Atlantic Station,60,317,10th St & Hemphill Ave,0,53,14.0,64.9,71.2,15.2,16.0,64.9,-37.8
+23,Weekend Atlantic Station,70,324,Hemphill Ave & Curran St,0,139,13.0,24.0,27.2,163.2,179.0,24.0,24.2
+23,Weekend Atlantic Station,80,322,16th & Village St.,0,192,15.0,26.4,24.4,195.6,166.1,26.4,3.6
+23,Weekend Atlantic Station,90,369,MARTA Stop (Twelve Hotel),0,60,8.0,41.9,36.7,293.2,256.0,41.9,233.2
+23,Weekend Atlantic Station,100,367,MARTA Stop (17th & Village),0,36,14.0,50.5,46.3,2.8,2.5,50.5,-33.2
+23,Weekend Atlantic Station,110,368,MARTA Stop (17th & Bishop),0,200,15.0,20.6,19.6,272.7,227.5,20.6,72.7
+23,Weekend Atlantic Station,120,357,Hemphill Ave & Curran St SB,0,126,6.0,13.8,10.4,108.1,100.5,13.8,-17.9
+23,Weekend Atlantic Station,130,325,Baker Building on State St.,0,41,15.0,22.6,21.4,5.9,5.6,22.6,-35.1
+23,Weekend Atlantic Station,140,326,Kendeda Building,0,44,13.0,28.0,28.6,13.2,11.0,28.0,-30.8
+23,Weekend Atlantic Station,150,327,Couch Park,0,73,14.0,8.3,7.9,31.3,32.0,8.3,-41.7
+24,Weekend Midtown,1,328,North Avenue Apts - To West Campus,180,172,14.0,195.5,177.5,169.0,81.0,15.5,-3.0
+24,Weekend Midtown,20,329,Brown Residence Hall,0,54,7.0,17.3,17.4,9.2,10.2,17.3,-44.8
+24,Weekend Midtown,30,330,Techwood Dr & Field Residence Hall,0,63,13.0,24.4,22.2,25.9,26.6,24.4,-37.1
+24,Weekend Midtown,40,331,Techwood & 5th  - North,0,54,12.0,59.4,58.1,10.5,10.9,59.4,-43.5
+24,Weekend Midtown,50,332,Russ Chandler Stadium,0,40,12.0,23.2,8.8,1.4,0.0,23.2,-38.6
+24,Weekend Midtown,60,333,Klaus Building WB,0,54,13.0,15.9,15.2,14.3,11.3,15.9,-39.7
+24,Weekend Midtown,70,334,Nanotechnology,0,55,13.0,27.2,29.7,27.5,22.2,27.2,-27.5
+24,Weekend Midtown,80,335,Krone Engineered Biosystems Building on State St.,0,64,11.0,31.4,32.3,76.9,73.0,31.4,12.9
+24,Weekend Midtown,90,336,10th St at Holly St,0,271,10.0,18.6,21.6,290.7,285.0,18.6,19.7
+24,Weekend Midtown,100,337,MARTA Midtown Station,180,67,12.0,67.7,34.5,47.4,27.0,-112.3,-19.6
+24,Weekend Midtown,110,338,Publix at the Plaza,0,201,12.0,129.8,60.7,281.1,281.1,129.8,80.1
+24,Weekend Midtown,120,339,Graduate Living Center,0,60,1.0,29.2,29.2,16.0,16.0,29.2,-44.0
+24,Weekend Midtown,130,340,Baker Building on State St.,0,79,13.0,64.6,33.2,40.0,33.0,64.6,-39.0
+24,Weekend Midtown,140,341,Cherry Emerson,0,44,14.0,19.5,15.6,8.5,10.5,19.5,-35.5
+24,Weekend Midtown,150,342,Klaus Building EB,0,87,14.0,20.7,15.9,44.3,42.9,20.7,-42.7
+24,Weekend Midtown,160,343,Techwood Dr & 5th St - South,0,50,14.0,28.7,10.9,14.4,11.0,28.7,-35.6
+24,Weekend Midtown,170,344,Techwood Dr & Bobby Dodd Way,0,173,14.0,17.2,13.2,83.9,93.9,17.2,-89.1
+24,Weekend Midtown,180,345,COP & North Ave.,0,39,10.0,7.7,6.3,1.1,0.0,7.7,-37.9
+26,Northside Dr. - Atlantic Station,1,358,Exhibition Hall,0,109,92.0,148.5,89.4,102.5,84.7,148.5,-6.5
+26,Northside Dr. - Atlantic Station,20,359,Center St. Apartments & Hemphill Ave,0,31,101.0,75.4,41.0,0.0,0.0,75.4,-31.0
+26,Northside Dr. - Atlantic Station,25,487,Georgia Tech Police Department,10,75,88.0,21.1,14.7,52.4,40.2,11.1,-22.6
+26,Northside Dr. - Atlantic Station,30,362,MARTA Stop 10th St. @ Northside Dr.,0,191,90.0,92.2,94.1,282.8,235.8,92.2,91.8
+26,Northside Dr. - Atlantic Station,40,361,16th & Village St.,0,111,97.0,76.2,42.1,78.7,73.0,76.2,-32.3
+26,Northside Dr. - Atlantic Station,50,363,MARTA Stop (17th & State),0,45,77.0,24.9,9.4,29.8,32.7,24.9,-15.2
+26,Northside Dr. - Atlantic Station,60,364,MARTA Stop  (17th & Village),0,36,94.0,44.7,29.8,4.6,5.4,44.7,-31.4
+26,Northside Dr. - Atlantic Station,70,365,MARTA Stop  (17th & Bishop),0,234,97.0,56.4,35.6,267.9,238.0,56.4,33.9
+26,Northside Dr. - Atlantic Station,100,360,MARTA Stop Northside Dr. @ 10th St.,0,170,86.0,58.6,64.9,108.1,105.4,58.6,-61.9
+28,Clough,1,392,Clough Commons,180,126,286.0,230.8,228.8,65.7,60.8,50.8,-60.3
+28,Clough,10,394,Fowler NB,0,46,306.0,40.9,35.5,12.7,11.0,40.9,-33.3
+28,Clough,20,388,5th Street Bridge EB,0,63,295.0,11.3,8.4,29.5,27.9,11.3,-33.5
+28,Clough,30,389,Technology Square EB,0,73,51.0,47.1,34.7,67.5,71.0,47.1,-5.5
+28,Clough,40,390,College of Business,0,50,222.0,78.0,87.1,21.3,11.8,78.0,-28.7
+28,Clough,50,391,Academy of Medicine,0,166,299.0,25.2,23.0,203.1,198.6,25.2,37.1
+28,Clough,60,385,MARTA Midtown Station,180,67,298.0,130.8,114.6,34.3,33.2,-49.2,-32.7
+28,Clough,70,393,Publix at the Plaza,0,216,312.0,81.8,67.4,145.6,142.6,81.8,-70.4
+28,Clough,80,386,Technology Square WB,0,50,300.0,43.9,40.4,21.6,12.0,43.9,-28.4
+28,Clough,90,387,5th Street Bridge WB,0,55,312.0,41.7,36.6,14.8,11.7,41.7,-40.2
+28,Clough,100,395,Fowler SB,10,104,181.0,28.3,24.2,56.8,51.7,18.3,-47.2
+29,Gold,1,419,Weber Loop,180,48,326.0,236.4,219.7,43.3,32.9,56.4,-4.7
+29,Gold,5,420,Student Center,10,78,317.0,25.1,23.0,37.0,35.2,15.1,-41.0
+29,Gold,10,407,Exhibition Hall,10,87,328.0,35.7,31.9,71.2,63.4,25.7,-15.8
+29,Gold,12,408,Ferst Dr & Hemphill Ave,10,66,320.0,36.5,32.6,37.2,33.9,26.5,-28.8
+29,Gold,15,409,Cherry Emerson,10,41,323.0,25.7,24.8,7.1,5.8,15.7,-33.9
+29,Gold,17,410,Klaus Building EB,10,73,323.0,31.6,29.8,47.6,44.0,21.6,-25.4
+29,Gold,20,399,5th Street Bridge EB,0,63,319.0,14.5,9.3,23.8,22.8,14.5,-39.2
+29,Gold,30,400,Technology Square EB,0,73,50.0,36.6,25.6,58.4,61.6,36.6,-14.6
+29,Gold,40,401,College of Business,0,50,231.0,90.4,91.4,23.0,11.5,90.4,-27.0
+29,Gold,50,402,Academy of Medicine,0,166,332.0,27.4,22.5,190.9,187.3,27.4,24.9
+29,Gold,60,396,MARTA Midtown Station,180,67,329.0,128.7,103.5,30.8,28.7,-51.3,-36.2
+29,Gold,70,404,Publix at the Plaza,0,216,327.0,79.6,67.6,123.8,115.2,79.6,-92.2
+29,Gold,80,397,Technology Square WB,0,50,330.0,44.4,40.9,24.6,16.4,44.4,-25.4
+29,Gold,90,398,5th Street Bridge WB,0,48,340.0,40.3,37.1,10.9,11.0,40.3,-37.1
+29,Gold,110,411,Russ Chandler Stadium,10,37,334.0,27.5,25.3,1.1,0.0,17.5,-35.9
+29,Gold,120,412,Klaus Building WB,10,53,328.0,33.1,31.7,18.0,16.9,23.1,-35.0
+29,Gold,130,413,Nanotechnology,10,30,328.0,34.2,31.7,0.0,0.0,24.2,-30.0
+29,Gold,140,415,Kendeda Building,10,43,335.0,31.2,29.2,11.6,11.1,21.2,-31.4
+29,Gold,150,416,Couch Park,10,58,301.0,12.7,8.9,30.1,28.0,2.7,-27.9
+29,Gold,160,417,CRC & Stamps Health,10,72,330.0,49.4,33.7,41.0,39.7,39.4,-31.0
+29,Gold,170,421,Ferst Drive & Student Center,10,61,334.0,25.3,24.4,26.9,27.1,15.3,-34.1
