@@ -1,5 +1,5 @@
 data/*.jsonl
-data/vehicle_heading/.next_tick
+data/vehicle_heading/
 reference/*.json
 __pycache__/
 *.pyc
