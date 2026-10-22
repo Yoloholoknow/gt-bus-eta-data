@@ -6,3 +6,5 @@ __pycache__/
 .venv/
 prediction/averages.csv
 data/prediction_eval/
+.codegraph/
+graphify-out/
