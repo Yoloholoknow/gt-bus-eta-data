@@ -1,0 +1,33 @@
+name: Pull data from Fly
+
+on:
+  schedule:
+    - cron: "0 9 * * *"  # daily, 09:00 UTC (5am Eastern)
+  workflow_dispatch:      # "Run workflow" button for manual pulls
+
+permissions:
+  contents: write
+
+jobs:
+  pull:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: updated-data
+
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - name: Download stop timings from the Fly volume
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: fly ssh console -a gt-bus-eta-data -C "tar czf - -C /app data/stops_timings" | tar xzf -
+
+      - name: Commit if anything changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898699+github-actions[bot]@users.noreply.github.com"
+          git add data/stops_timings
+          git diff --cached --quiet && echo "No new data" && exit 0
+          git commit -m "data: daily pull $(date -u +%F)"
+          git push origin updated-data
