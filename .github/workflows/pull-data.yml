@@ -34,14 +34,27 @@ jobs:
           git commit -m "data: daily pull $(date -u +%F)"
           git push origin updated-data
 
-      - name: Open a PR into main (if one isn't already open)
+      - name: Open or update PR and enable auto-merge
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if [ "$(git rev-list --count origin/main..HEAD)" = 0 ]; then echo "Nothing to merge"; exit 0; fi
-          if [ "$(gh pr list --head updated-data --base main --state open --json number -q length)" != 0 ]; then
-            echo "PR already open; it picks up the new commit automatically"; exit 0
+          if [ "$(git rev-list --count origin/main..HEAD)" = 0 ]; then
+            echo "Nothing to merge"
+            exit 0
           fi
-          gh pr create --head updated-data --base main \
-            --title "Data update $(date -u +%F)" \
-            --body "Automated daily pull of \`data/stops_timings\` from Fly."
+
+          PR_NUMBER=$(gh pr list --head updated-data --base main --state open --json number -q '.[0].number')
+
+          if [ -z "$PR_NUMBER" ]; then
+            echo "Creating new PR..."
+            PR_URL=$(gh pr create --head updated-data --base main \
+              --title "Data update $(date -u +%F)" \
+              --body "Automated daily pull of \`data/stops_timings\` from Fly.")
+            PR_TARGET="$PR_URL"
+          else
+            echo "PR #$PR_NUMBER already open; updating target..."
+            PR_TARGET="$PR_NUMBER"
+          fi
+
+          echo "Enabling auto-merge for $PR_TARGET..."
+          gh pr merge "$PR_TARGET" --auto --squash
