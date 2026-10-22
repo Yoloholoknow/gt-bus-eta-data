@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   pull:
@@ -15,6 +16,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: updated-data
+          fetch-depth: 0  # full history so we can compare against main
 
       - uses: superfly/flyctl-actions/setup-flyctl@master
 
@@ -31,3 +33,15 @@ jobs:
           git diff --cached --quiet && echo "No new data" && exit 0
           git commit -m "data: daily pull $(date -u +%F)"
           git push origin updated-data
+
+      - name: Open a PR into main (if one isn't already open)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ "$(git rev-list --count origin/main..HEAD)" = 0 ]; then echo "Nothing to merge"; exit 0; fi
+          if [ "$(gh pr list --head updated-data --base main --state open --json number -q length)" != 0 ]; then
+            echo "PR already open; it picks up the new commit automatically"; exit 0
+          fi
+          gh pr create --head updated-data --base main \
+            --title "Data update $(date -u +%F)" \
+            --body "Automated daily pull of \`data/stops_timings\` from Fly."
