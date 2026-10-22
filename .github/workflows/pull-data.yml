@@ -23,7 +23,7 @@ jobs:
       - name: Download stop timings from the Fly volume
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
-        run: fly ssh console -a gt-bus-eta-data -C "tar czf - -C /app data/stops_timings" | tar xzf -
+        run: flyctl ssh console -a gt-bus-eta-data -C "tar czf - -C /app data/stops_timings" | tar xzf -
 
       - name: Commit if anything changed
         run: |
