@@ -806,7 +806,7 @@ class Evaluator:
 
     def process(self, observation):
         at = parse_time(observation["received_at"])
-        if at <= self.model.training_end:
+        if at <= self.model.training_end and not self.config.get("allow_training_overlap", False):
             raise ValueError("Evaluation observations must be later than the frozen training data")
         if self.last_at and at < parse_time(self.last_at):
             raise ValueError("Observation clock moved backwards; stop and inspect timestamps")
@@ -1099,7 +1099,8 @@ def replay(evaluator, path):
                 evaluator.process(json.loads(line))
                 count += 1
         manifest = {"source": str(path), "source_byte_cutoff": boundary, "observations": count}
-    manifest.update(detector_version=4, model_hash=evaluator.model.hash, completed_at=stamp(utc_now()))
+    manifest.update(detector_version=4, model_hash=evaluator.model.hash, completed_at=stamp(utc_now()),
+                    allow_training_overlap=evaluator.config.get("allow_training_overlap", False))
     (evaluator.run_dir / "replay_manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
     evaluator.write_summary()
     evaluator.write_selection()
@@ -1125,7 +1126,11 @@ def main():
     parser.add_argument("--min-dates", type=int, default=3)
     parser.add_argument("--duration-seconds", type=float, help="Optional bounded run; otherwise stop with Ctrl+C")
     parser.add_argument("--replay", type=Path, help="Replay a checkpoint.sqlite3 snapshot or raw journal into a NEW run directory")
+    parser.add_argument("--allow-training-overlap", action="store_true",
+                        help="Allow replay observations at/before the training cutoff; results are not independent test accuracy")
     args = parser.parse_args()
+    if args.allow_training_overlap and not args.replay:
+        parser.error("--allow-training-overlap requires --replay")
     for name in ("gps_seconds", "estimate_seconds", "timeout_seconds", "radius_meters", "exit_radius_meters", "route_corridor_meters", "max_gps_age_seconds",
                  "max_observation_gap_seconds", "max_estimate_age_seconds", "min_samples", "min_dates", "duration_seconds"):
         value = getattr(args, name)
@@ -1141,6 +1146,9 @@ def main():
         config = {key: getattr(args, key) for key in (
             "radius_meters", "exit_radius_meters", "route_corridor_meters", "max_gps_age_seconds", "max_observation_gap_seconds", "max_estimate_age_seconds")}
         config["base_url"] = args.base_url
+        if args.allow_training_overlap:
+            config["allow_training_overlap"] = True
+            logging.warning("Training/evaluation overlap allowed for replay; results are not independent test accuracy")
         evaluator = Evaluator(run_dir, model, args.routes, config)
         logging.info("Frozen model %s; CSV outputs: %s", model.hash[:12], run_dir)
         if args.replay:

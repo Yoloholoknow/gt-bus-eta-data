@@ -219,9 +219,27 @@ JSONL replay remains supported by passing `raw_observations.jsonl`; its initial
 byte boundary is pinned and an incomplete trailing line is ignored. Use the
 same historical averages and route snapshot when comparing detector versions.
 The evaluator rejects observations at or before the training cutoff. To
-continue collecting into the corrected run after replay, use the same
+recalculate saved JSONL observations with newer averages, explicitly add
+`--allow-training-overlap` to a replay command and use a fresh run directory:
+
+```sh
+.venv/bin/python prediction/eval_loop.py \
+  --averages prediction/averages.csv \
+  --replay data/prediction_eval/20261019T181853255804Z/raw_observations.jsonl \
+  --allow-training-overlap \
+  --run-dir data/prediction_eval/20261027_new_predictions_replay_v2
+```
+
+This option permits observations at or before the training cutoff. Results
+can overlap training data and are not independent test accuracy. The option
+is frozen in checkpoint settings and recorded in the replay manifest. It
+requires `--replay`; SQLite replay still requires the source model hash to
+match, so use the raw JSONL journal when changing averages.
+
+For replays without training overlap, continue collecting into the corrected run using the same
 `--run-dir` without `--replay`. Restart gaps still exclude pending forecasts
-whose circuit cannot be verified.
+whose circuit cannot be verified. Start a separate run for live evaluation
+after a replay with `--allow-training-overlap`.
 
 Run collection on a machine that stays awake and connected. Check
 `diagnostics.csv` for GPS request errors and fresh-fix activity after outages.
@@ -264,3 +282,202 @@ Exclusions are shown separately by reason and route. Finalized CSVs do not
 contain pending forecasts. Accuracy describes the scoreable subset, and GPS
 arrival labels are not verified door-opening times. Keep detector versions in
 separate runs when interpreting results.
+
+## Export individual ground truth and compare your own model
+
+Create one row per origin arrival and destination horizon, deduplicating the
+nine averaging variants. This reads the checkpoint, including pending journeys,
+in a consistent read-only transaction:
+
+```sh
+.venv/bin/python prediction/export_ground_truth.py \
+  --run-dir data/prediction_eval/20261019T181853255804Z
+```
+
+The output is `ground_truth.csv` inside that run. Use `--output PATH` to write
+elsewhere. To keep refreshing it while `eval_loop.py` collects in another
+terminal, add `--watch` (default refresh: 10 seconds; Ctrl+C stops the export).
+The exporter does not start collection. It replaces the output atomically,
+so each refresh includes updated statuses without duplicate rows. Re-exporting
+the same run preserves sample IDs, independently of which baseline you select.
+
+Each row includes:
+
+- `sample_id`: join your model's prediction to exactly this journey/horizon.
+- Route, vehicle, origin/destination IDs and names, and circuit sequences.
+- `stops_ahead`, `route_fraction_ahead` (stops ahead divided by route stop count),
+  and `full_circuit_ahead`. Fraction means stop count, not physical distance.
+- `prediction_time`: the observed origin arrival in UTC; corresponding local
+  timestamp, date, weekday (Monday=0), weekend flag, hour, minute, and time bucket
+  in America/New_York. Change reporting buckets with `--time-bucket-minutes 30`.
+- `actual_arrival`, `actual_elapsed_seconds` (the supervised ETA target), the
+  preceding GPS receipt `actual_lower_bound`, elapsed lower bound, and destination
+  arrival uncertainty in seconds. Times describe GPS geofence entry, not doors opening.
+- Status/exclusion reason, missing intermediate observation flags, detector
+  version, frozen baseline hash, baseline elapsed prediction/sample count/fallback,
+  and the TransLoc elapsed prediction available when the forecast was issued.
+
+These samples start at observed stop arrivals, not arbitrary GPS times between
+stops. `label_available=1` identifies trainable/scorable rows. Pending, excluded,
+and unavailable journeys have blank labels, never zero targets. Labels reuse
+resolved outcomes from the existing detector. If **every** averaging variant
+was unavailable, that journey remains unlabeled even if a later arrival exists:
+the evaluator did not track a pending forecast for it. Inspect this coverage
+before treating the export as a complete census of bus journeys.
+
+For training, use origin-time features such as route, stop IDs, stops ahead,
+weekday and local time. Actual arrival/bounds, outcome status, missing-observation
+flags, and target values are future information; do not use them as features.
+Split chronologically by date before fitting/tuning, keeping overlapping horizons
+from the same origin event together. Baseline scores on data used to train a new
+model are not an independent evaluation.
+
+To compare a new model immediately, write a CSV with these two columns and one
+row per sample you predict; elapsed seconds are measured from `prediction_time`:
+
+```csv
+sample_id,predicted_elapsed_seconds
+<sample_id copied from ground_truth.csv>,125.5
+```
+
+Then run:
+
+```sh
+.venv/bin/python prediction/export_ground_truth.py \
+  --run-dir data/prediction_eval/20261019T181853255804Z \
+  --predictions /path/to/my_predictions.csv
+```
+
+This also writes `ground_truth.scores.csv` (individual signed/absolute errors)
+and `ground_truth.metrics.csv` (overall, per route, per route/stops ahead, and per
+route/stops ahead/time bucket). Metrics include MAE, median/p90 absolute error,
+bias, within-30/60/120-second rates, resolved prediction coverage, and paired
+improvement over the frozen baseline. Positive error means late; positive
+improvement means your model has lower paired MAE. P90 uses the nearest rank.
+Missing predictions are counted in coverage, not assigned zero error. Unknown
+prediction IDs are reported in the terminal; duplicate IDs and invalid elapsed
+times fail validation. Use `--baseline-bucket-minutes 60` to compare with another
+saved averaging variant (default: unbucketed). Only paired cases contribute to
+the improvement metric. With `--watch`, the prediction CSV is reread each refresh;
+replace your prediction file atomically when updating it.
+
+The saved route file must match the checkpoint's frozen route hash, and the
+checkpoint must use detector version 4. Replay older runs first. The export
+requires only Python's standard library.
+
+## Live corrected arrivals for a selected stop
+
+Run a local, read-only CLI; no API server or hosting is required:
+
+```sh
+.venv/bin/python prediction/live_arrivals.py --route Red --stop "West Village"
+```
+
+Route names/colors and route IDs are accepted, case insensitive. A stop can be
+its **RouteStopID**, exact name, or an unambiguous part of its name. Ambiguous
+names list the matching IDs rather than guessing a direction. For example:
+
+```sh
+.venv/bin/python prediction/live_arrivals.py --route Red --stop 273
+.venv/bin/python prediction/live_arrivals.py --route Gold --list-stops
+.venv/bin/python prediction/live_arrivals.py --route Gold --stop "MARTA Midtown Station" --bucket-minutes 60
+```
+
+Each poll is an independent snapshot, with no GPS warmup or background history:
+
+1. Fetch `GetStopArrivalTimes` for the selected route-stop to identify approaching
+   vehicles and their original TransLoc arrival estimates.
+2. Fetch `GetVehicleRouteStopEstimates` for those vehicle IDs and select each
+   vehicle's earliest valid future stop on the selected route.
+3. Add the direct historical mean from that future stop to the destination.
+
+The CLI loads `prediction/averages.csv` once and refreshes every five seconds.
+The default is unbucketed means (`--bucket-minutes 0`). To use two-hour buckets:
+
+```sh
+.venv/bin/python prediction/live_arrivals.py --route Red --stop "West Village" --bucket-minutes 120
+```
+
+Bucket selection uses the estimated arrival time at the future anchor in
+America/New_York. Sparse buckets use the existing unbucketed fallback rules;
+`[unbucketed mean]` marks this explicitly. No evaluation winner is selected
+implicitly. Dwell at the model origin/intermediate stops is already included.
+
+Stops marked `IsArriving` are skipped as model anchors: their elapsed dwell is
+unknown. TransLoc's ETA to the next future stop covers remaining dwell plus
+travel, and the model starts at that stop's estimated arrival. There is no
+stop-anchored countdown based on a previously observed GPS arrival anymore.
+
+Sources in the output:
+
+- `hybrid`: TransLoc to the next future stop plus the direct model onward.
+  Horizons follow route order, wrapping at the circuit boundary.
+- `transloc-next-stop`: the selected destination is the next future stop; retain
+  its original selected-stop estimate without adding a model segment.
+- `transloc-arriving`: the selected-stop endpoint marks this bus as arriving;
+  show the current occurrence with zero remaining seconds, not a later circuit.
+- `transloc-fallback`: upcoming estimates are missing/stale, the earliest future
+  stop is ambiguous, the vehicle reports another route's stops, the target
+  occurrence precedes the anchor, or the required model mean is unavailable.
+  The reason is printed below the bus.
+
+Schedule-only and departed entries are excluded. Each vehicle has at most one
+output row, representing its nearest selected-stop occurrence. Upcoming entries
+are ordered by estimated arrival time rather than assuming API array order.
+A response over 30 seconds old is not used (`--max-age-seconds` changes this
+limit). This checks response receipt age; it cannot establish whether TransLoc's
+underlying observations themselves were stale. Missing upcoming estimates fall
+back to TransLoc; a missing/stale selected-stop response produces no bus rows.
+
+Times are minutes:seconds, with arrival clocks in America/New_York. Vehicle IDs
+are displayed by default. `--vehicle-names` optionally requests fleet names from
+`GetMapVehiclePoints`; this data never determines predictions. If names are slow
+or unavailable, vehicle IDs still work. An outstanding optional name request can
+finish during shutdown, up to its request timeout.
+
+Press Ctrl+C to stop. `--once` performs one complete snapshot and can produce
+hybrid predictions immediately. `--duration-seconds 60` runs for a bounded
+period. `--json` prints one JSON object per snapshot, including source, fallback
+reason, anchor ID/name, horizon, model sample count, actual model bucket width,
+and UTC arrival timestamps. Model and route paths can be changed with
+`--averages` and `--routes`.
+
+For an iOS integration, the same calculation can run when the arrivals screen
+opens or refreshes, using bundled model/route data and the two API responses.
+It needs no continuously running collector or server.
+
+### Editable route/time offsets
+
+`prediction/route_time_offsets.csv` is an editable table of **seconds**, with
+route colors/names as rows and ten two-hour columns from `4-6 AM` through
+`10 PM-12 AM` (10 PM to midnight). All cells initially contain zero.
+
+The CLI loads this table automatically and reloads it before every poll. Edit a
+cell while the CLI runs to use it on the next poll. `--offsets PATH` selects a
+different table. Invalid/blank/nonfinite cells and duplicate route rows produce
+a clear error instead of silently applying a bad correction.
+
+The **current prediction-request time in America/New_York** selects the column,
+independently of the historical model's bucket or predicted arrival time. For
+example, setting Red's `4-6 PM` cell to `-60` makes its final predicted arrivals
+one minute earlier for snapshots requested from 4 PM up to (not including)
+6 PM. `30` makes arrivals 30 seconds later. Route names are case insensitive.
+Missing route rows and midnight through 4 AM use zero correction.
+
+Apply the offset once to the final ETA, including hybrid, next-stop, and
+TransLoc fallback predictions. The original `TRANSLOC` comparison is unchanged.
+Remaining time is clamped to zero; buses already marked `transloc-arriving`
+stay at zero. The `OFFSET` display column reports the actual applied change.
+JSON includes the configured `offset_seconds`, actual `applied_offset_seconds`,
+and `unadjusted_predicted_arrival` per bus, plus the snapshot's `offset_block`
+and `route_offset_seconds`. When clamping or arriving prevents the full
+correction, configured and applied seconds can differ.
+
+These live hybrid estimates have not yet been independently scored. The existing
+evaluator measures stop-origin forecasts, not this between-stop combination.
+
+Offline behavioral checks:
+
+```sh
+.venv/bin/python -m unittest discover -s tests -p 'test_live_arrivals.py' -v
+```

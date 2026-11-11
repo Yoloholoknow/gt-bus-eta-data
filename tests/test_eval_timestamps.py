@@ -80,6 +80,25 @@ class GPSClockTests(unittest.TestCase):
         self.engine.process({"kind": "tick", "received_at": stamp(self.at + timedelta(seconds=seconds)),
                              "data": [], "error": ""})
 
+    def test_training_cutoff_rejects_overlap_by_default(self):
+        self.model.training_end = self.at
+        self.open_engine()
+        with self.assertRaisesRegex(ValueError, "later than the frozen training data"):
+            self.tick(0)
+
+    def test_training_overlap_opt_in_is_frozen_and_accepts_older_observations(self):
+        self.model.training_end = self.at + timedelta(days=1)
+        self.config["allow_training_overlap"] = True
+        self.open_engine()
+        self.tick(0)
+        frozen = json.loads(self.engine.db.execute("SELECT value FROM metadata WHERE key='frozen'").fetchone()[0])
+        self.assertTrue(frozen["config"]["allow_training_overlap"])
+        self.engine.close()
+        self.engine = None
+        self.config.pop("allow_training_overlap")
+        with self.assertRaisesRegex(ValueError, "Run settings/model"):
+            self.open_engine()
+
     def rows(self, filename):
         with (self.root / "run" / filename).open(newline="") as source:
             return list(csv.DictReader(source))

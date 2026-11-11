@@ -13,7 +13,9 @@ import streamlit as st
 
 ROOT = Path(__file__).resolve().parents[1]
 RUNS = ROOT / "data" / "prediction_eval"
-COLORS = {"Your model": "#2563eb", "TransLoc": "#f97316"}
+COLORS = {"Your model": "#2563eb", "Your model (offset)": "#9333ea", "TransLoc": "#f97316"}
+PREDICTORS = {"error_seconds": "Your model", "offset_error_seconds": "Your model (offset)",
+              "transloc_error_seconds": "TransLoc"}
 
 
 @st.cache_data(max_entries=3, ttl=30)
@@ -65,10 +67,10 @@ def paired_rows(frame):
 
 def long_errors(frame):
     return frame.melt(id_vars=["Route", "Destination", "horizon_stops", "Time of day"],
-                      value_vars=["error_seconds", "transloc_error_seconds"],
+                      value_vars=list(PREDICTORS),
                       var_name="Predictor", value_name="Signed error (seconds)").assign(
         Predictor=lambda x: x["Predictor"].map(
-            {"error_seconds": "Your model", "transloc_error_seconds": "TransLoc"}),
+            PREDICTORS),
         **{"Absolute error (seconds)": lambda x: x["Signed error (seconds)"].abs()})
 
 
@@ -76,20 +78,51 @@ def comparison_table(frame, group):
     records = []
     for label, part in frame.groupby(group, observed=True, sort=True):
         ours, vendor = part["error_seconds"], part["transloc_error_seconds"]
+        offset = part["offset_error_seconds"]
         records.append({group: label, "Forecasts": len(part),
                         "Distinct arrivals": len(part.drop_duplicates(
                             ["vehicle_id", "destination_route_stop_id", "actual_arrival"])),
-                        "Your MAE": ours.abs().mean(), "TransLoc MAE": vendor.abs().mean(),
+                        "Your MAE": ours.abs().mean(), "Offset MAE": offset.abs().mean(),
+                        "TransLoc MAE": vendor.abs().mean(),
                         "MAE gain": vendor.abs().mean() - ours.abs().mean(),
-                        "Your bias": ours.mean(), "TransLoc bias": vendor.mean(),
+                        "Your bias": ours.mean(), "Offset bias": offset.mean(), "TransLoc bias": vendor.mean(),
                         "Your P90": ours.abs().quantile(.9),
                         "TransLoc P90": vendor.abs().quantile(.9)})
     return pd.DataFrame(records)
 
 
-def chart(figure):
+def error_rates(frame):
+    return pd.DataFrame({name: [
+        (frame[column] > 30).mean() * 100,
+        (frame[column] > 60).mean() * 100,
+        (frame[column] > 120).mean() * 100,
+        (frame[column] < -60).mean() * 100,
+        (frame[column] < -120).mean() * 100,
+        (frame[column] < -180).mean() * 100,
+    ] for column, name in PREDICTORS.items()},
+        index=["Over 30 sec late", "Over 1 min late", "Over 2 min late", "Over 1 min early", "Over 2 min early", "Over 3 min early"])
+
+
+def chart(figure, series_key=None, series_options=None, rates=None):
     figure.update_layout(margin=dict(l=10, r=10, t=40, b=10), legend_title_text="")
-    st.plotly_chart(figure, width="stretch")
+    if series_key is None:
+        st.plotly_chart(figure, width="stretch")
+        return
+    plot, controls = st.columns([3, 2])
+    options = list(PREDICTORS.values()) if series_options is None else series_options
+    selected = controls.multiselect("Show on graph", options, default=options, key=series_key)
+    if rates is not None:
+        with controls:
+            st.table(rates.style.format("{:.1f}%"))
+            st.caption("Percent of all paired forecasts matching your filters, for all three predictors. "
+                       "Thresholds are strict; thresholds in each direction overlap.")
+    for trace in figure.data:
+        trace.visible = trace.name in selected
+    with plot:
+        if selected:
+            st.plotly_chart(figure, width="stretch")
+        else:
+            st.info("Select at least one series to display.")
 
 
 def render(path):
@@ -129,7 +162,8 @@ def render(path):
                              format_func=lambda x: f"{x}-minute intervals")
     start = filtered["departure_minute"] // time_width * time_width
     filtered["Time of day"] = start.map(lambda x: f"{clock_label(x)}–{clock_label(x + time_width)}")
-    times = b.multiselect("Departure intervals (empty = all)", sorted(filtered["Time of day"].unique()))
+    departure_windows = sorted(filtered["Time of day"].unique())
+    times = b.multiselect("Departure intervals (empty = all)", departure_windows)
     quality = c.selectbox("Intermediate arrival observations", ["Include all", "Complete only", "Missing intermediates only"])
     if times:
         filtered = filtered[filtered["Time of day"].isin(times)]
@@ -137,7 +171,33 @@ def render(path):
         flag = "0" if quality == "Complete only" else "1"
         filtered = filtered[filtered["intermediate_observations_missing"] == flag]
 
+    offset_mode = st.radio("Prediction offset mode", ["One offset for all windows", "Set each departure window"],
+                           horizontal=True)
+    offset_seconds = st.number_input("Your model prediction offset (seconds)", value=0.0, step=1.0,
+                                     disabled=offset_mode == "Set each departure window")
+    st.caption("Applies to your selected model and filtered forecasts. Positive = later arrival; "
+               "negative = earlier arrival. Original predictions and TransLoc stay unchanged.")
+    window_offsets = {}
+    if offset_mode == "Set each departure window":
+        # Keep values even when filters temporarily remove a window's widget.
+        saved_offsets = st.session_state.setdefault("departure_window_offsets", {})
+        with st.expander("Offsets by departure window (Eastern)", expanded=True):
+            st.caption("Each window's value replaces the single offset above. Unset windows use 0 seconds. "
+                       "Values are kept separately for each departure interval size during this session.")
+            columns = st.columns(3)
+            for index, window in enumerate(departure_windows):
+                offset_key = f"{time_width}:{window}"
+                window_offsets[window] = columns[index % 3].number_input(
+                    f"{window} offset (seconds)", value=saved_offsets.get(offset_key, 0.0), step=1.0,
+                    key=f"departure_offset_{offset_key}")
+                saved_offsets[offset_key] = window_offsets[window]
     paired = paired_rows(filtered)
+    paired["prediction_offset_seconds"] = (
+        paired["Time of day"].map(window_offsets).fillna(0.0)
+        if offset_mode == "Set each departure window" else offset_seconds)
+    paired["offset_error_seconds"] = paired["error_seconds"] + paired["prediction_offset_seconds"]
+    paired["offset_predicted_arrival"] = (paired["predicted_arrival"]
+                                          + pd.to_timedelta(paired["prediction_offset_seconds"], unit="s"))
     if width and not paired.empty:
         fallback_count = (paired["fallback_used"] == "1").sum()
         st.caption(f"Selected model: {fallback_count:,} of {len(paired):,} paired forecasts "
@@ -170,13 +230,16 @@ def render(path):
             st.info("No paired resolved forecasts match these filters. Broaden the selection or wait for more arrivals.")
         return
     errors = long_errors(paired)
-    ours, vendor = paired["error_seconds"], paired["transloc_error_seconds"]
+    rates = error_rates(paired)
+    ours, offset, vendor = (paired[column] for column in PREDICTORS)
     with distributions:
-        a, b, c, d = st.columns(4)
+        a, b, c, d, e = st.columns(5)
         a.metric("Your MAE", f"{ours.abs().mean():.1f} sec")
-        b.metric("TransLoc MAE", f"{vendor.abs().mean():.1f} sec")
-        c.metric("MAE gain (positive = yours better)", f"{vendor.abs().mean() - ours.abs().mean():+.1f} sec")
-        d.metric("Distinct observed arrivals", len(paired.drop_duplicates(
+        b.metric("Offset MAE", f"{offset.abs().mean():.1f} sec",
+                 delta=f"{offset.abs().mean() - ours.abs().mean():+.1f} sec vs. original", delta_color="inverse")
+        c.metric("TransLoc MAE", f"{vendor.abs().mean():.1f} sec")
+        d.metric("MAE gain (positive = yours better)", f"{vendor.abs().mean() - ours.abs().mean():+.1f} sec")
+        e.metric("Distinct observed arrivals", len(paired.drop_duplicates(
             ["vehicle_id", "destination_route_stop_id", "actual_arrival"])))
         st.caption("Error = predicted arrival − observed arrival. Negative is early; positive is late. "
                    "Zero is the observed arrival. Labels come from the GPS detector, not verified door-opening times.")
@@ -186,28 +249,30 @@ def render(path):
                                  color_discrete_map=COLORS, histnorm="probability",
                                  title="How early or late were the predictions?")
         histogram.add_vline(x=0, line_dash="dash", line_color="#64748b")
-        chart(histogram)
+        chart(histogram, series_key="histogram_series", rates=rates)
         chart(px.ecdf(errors, x="Absolute error (seconds)", color="Predictor",
-                      color_discrete_map=COLORS, title="Fraction of predictions within each error threshold"))
-        summary = pd.DataFrame({"Predictor": ["Your model", "TransLoc"],
-            "MAE (sec)": [ours.abs().mean(), vendor.abs().mean()],
-            "Median absolute (sec)": [ours.abs().median(), vendor.abs().median()],
-            "P90 absolute (sec)": [ours.abs().quantile(.9), vendor.abs().quantile(.9)],
-            "Bias (sec)": [ours.mean(), vendor.mean()],
-            "Early (%)": [(ours < 0).mean() * 100, (vendor < 0).mean() * 100],
-            "Within 60 sec (%)": [(ours.abs() <= 60).mean() * 100, (vendor.abs() <= 60).mean() * 100]})
+                      color_discrete_map=COLORS, title="Fraction of predictions within each error threshold"),
+              series_key="ecdf_series", rates=rates)
+        summary = pd.DataFrame([{"Predictor": name,
+            "MAE (sec)": paired[column].abs().mean(),
+            "Median absolute (sec)": paired[column].abs().median(),
+            "P90 absolute (sec)": paired[column].abs().quantile(.9),
+            "Bias (sec)": paired[column].mean(),
+            "Early (%)": (paired[column] < 0).mean() * 100,
+            "Within 60 sec (%)": (paired[column].abs() <= 60).mean() * 100}
+            for column, name in PREDICTORS.items()])
         st.dataframe(summary.round(1), hide_index=True, width="stretch")
     with breakdown:
         group = st.selectbox("Compare distributions by", ["Route", "Destination", "Origin", "horizon_stops", "Time of day"])
         # Origin is only needed for this view, avoiding duplicated wide data elsewhere.
-        group_errors = paired.melt(id_vars=[group], value_vars=["error_seconds", "transloc_error_seconds"],
+        group_errors = paired.melt(id_vars=[group], value_vars=list(PREDICTORS),
                                    var_name="Predictor", value_name="Signed error (seconds)")
         group_errors["Predictor"] = group_errors["Predictor"].map(
-            {"error_seconds": "Your model", "transloc_error_seconds": "TransLoc"})
+            PREDICTORS)
         figure = px.box(group_errors, x=group, y="Signed error (seconds)", color="Predictor",
                         points=False, color_discrete_map=COLORS)
         figure.add_hline(y=0, line_dash="dash", line_color="#64748b")
-        chart(figure)
+        chart(figure, series_key="group_series", rates=rates)
         st.dataframe(comparison_table(paired, group).round(1), hide_index=True, width="stretch")
         st.caption("Boxes show the median and middle 50%; whiskers summarize spread. "
                    "Outlier markers are hidden here; every error remains in the distributions and metrics.")
@@ -215,17 +280,18 @@ def render(path):
         st.caption("Elapsed time is measured from the observed origin arrival, so model, TransLoc, and actuals share a clock.")
         elapsed = pd.DataFrame({"Actual elapsed (sec)": (paired["actual_arrival"] - paired["origin_arrival"]).dt.total_seconds(),
                                 "Your model": (paired["predicted_arrival"] - paired["origin_arrival"]).dt.total_seconds(),
+                                "Your model (offset)": (paired["offset_predicted_arrival"] - paired["origin_arrival"]).dt.total_seconds(),
                                 "TransLoc": (paired["transloc_predicted_arrival"] - paired["origin_arrival"]).dt.total_seconds(),
                                 "Route": paired["Route"], "Destination": paired["Destination"],
                                 "Stops ahead": paired["horizon_stops"]})
         scatter_data = elapsed.melt(id_vars=["Actual elapsed (sec)", "Route", "Destination", "Stops ahead"],
-                                    value_vars=["Your model", "TransLoc"], var_name="Predictor", value_name="Predicted elapsed (sec)")
+                                    value_vars=list(PREDICTORS.values()), var_name="Predictor", value_name="Predicted elapsed (sec)")
         figure = px.scatter(scatter_data, x="Actual elapsed (sec)", y="Predicted elapsed (sec)",
                             color="Predictor", opacity=.45, color_discrete_map=COLORS,
                             hover_data=["Route", "Destination", "Stops ahead"])
         high = max(scatter_data["Actual elapsed (sec)"].max(), scatter_data["Predicted elapsed (sec)"].max())
         figure.add_shape(type="line", x0=0, y0=0, x1=high, y1=high, line=dict(dash="dash", color="#64748b"))
-        chart(figure)
+        chart(figure, series_key="scatter_series", rates=rates)
         ordered = paired.sort_values("origin_arrival", ascending=False).reset_index(drop=True)
         selected = st.selectbox("Inspect a forecast", range(len(ordered)), format_func=lambda i:
             f"{ordered.iloc[i]['origin_arrival'].tz_convert('America/New_York'):%m/%d %H:%M:%S} · "
@@ -234,18 +300,20 @@ def render(path):
         row = ordered.iloc[selected]
         figure = go.Figure()
         for name, column, color in [("Your model", "predicted_arrival", COLORS["Your model"]),
+                                    ("Your model (offset)", "offset_predicted_arrival", COLORS["Your model (offset)"]),
                                     ("TransLoc", "transloc_predicted_arrival", COLORS["TransLoc"]),
                                     ("Observed arrival", "actual_arrival", "#16a34a")]:
             figure.add_trace(go.Scatter(x=[row[column].tz_convert("America/New_York").isoformat()],
                                        y=[name], name=name, mode="markers", marker=dict(size=15, color=color)))
         figure.update_xaxes(type="date", title="Arrival time (Eastern, offset shown on hover)")
-        chart(figure)
+        chart(figure, series_key="arrival_series",
+              series_options=[*PREDICTORS.values(), "Observed arrival"], rates=rates)
         columns = ["prediction_id", "Route", "vehicle_id", "Origin", "Destination", "horizon_stops",
-                   "origin_arrival", "predicted_arrival", "transloc_predicted_arrival", "actual_arrival",
-                   "error_seconds", "transloc_error_seconds", "sample_count", "fallback_used",
+                   "origin_arrival", "predicted_arrival", "offset_predicted_arrival", "transloc_predicted_arrival", "actual_arrival",
+                   "prediction_offset_seconds", "error_seconds", "offset_error_seconds", "transloc_error_seconds", "sample_count", "fallback_used",
                    "intermediate_observations_missing", "missed_intermediate_count"]
         display = ordered[columns].copy()
-        for column in ["origin_arrival", "predicted_arrival", "transloc_predicted_arrival", "actual_arrival"]:
+        for column in ["origin_arrival", "predicted_arrival", "offset_predicted_arrival", "transloc_predicted_arrival", "actual_arrival"]:
             display[column] = display[column].dt.tz_convert("America/New_York").astype(str)
         st.dataframe(display, hide_index=True, width="stretch")
         st.download_button("Download filtered paired forecasts", display.to_csv(index=False),
